@@ -1,0 +1,4 @@
+<layout id="MainLayout">
+    <label id="Line1" x="center" y="10" font="Gfx.FONT_MEDIUM" justification="Gfx.TEXT_JUSTIFY_CENTER" color="Gfx.COLOR_RED" />
+    <label id="Line2" x="center" y="30" font="Gfx.FONT_MEDIUM" justification="Gfx.TEXT_JUSTIFY_CENTER" color="Gfx.COLOR_RED" />
+</layout>

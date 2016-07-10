@@ -1,0 +1,6 @@
+<drawables>
+    <bitmap id="LauncherIcon" filename="launcher_icon.png" />
+    <drawable-list id="TransportIcon" background="Gfx.COLOR_TRANSPARENT">
+    	<shape type="rectangle" x="0" y="0" width="20" height="15" color="Gfx.COLOR_RED" corner_radius="3" />
+    </drawable-list>
+</drawables>
