@@ -1,0 +1,9 @@
+<properties>
+	<property id="appVersion" type="string">1.0</property>
+	<property id="favouriteStops" type="string">292,471</property>
+	<property id="useBus" type="boolean">true</property>
+	<property id="useTrain" type="boolean">true</property>
+	<property id="useMetro" type="boolean">true</property>
+	<property id="searchRadius" type="number">1000</property>
+	<property id="vibrate" type="boolean">true</property>
+</properties>
