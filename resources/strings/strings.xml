@@ -1,0 +1,19 @@
+<strings>
+    <string id="AppName">Departure Board</string>
+    <string id="AppVersionTitle">App Version</string>
+    <string id="FavouriteStopsPrompt">Favourite stops (comma separated)</string>
+    <string id="UseBusPrompt">Show busses</string>
+    <string id="UseTrainPrompt">Show trains</string>
+    <string id="UseMetroPrompt">Show metro</string>
+    <string id="SearchRadiusPrompt">Station search radius in m</string>
+    <string id="SearchRadiusError">Enter a number!</string>
+    <string id="VibratePrompt">Vibrate on update</string>
+    <string id="StrChooseStop">Pick a stop:</string>
+    <string id="StrWaitingForPosition">Waiting for position</string>
+    <string id="StrWaitingForStops">Waiting for stops</string>
+    <string id="StrWaitingForBoard">Waiting for board</string>
+    <string id="StrNoStops">No stops!</string>
+    <string id="StrHrId">h</string>
+    <string id="StrMinId">m</string>
+        
+</strings>

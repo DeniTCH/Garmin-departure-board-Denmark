@@ -1,0 +1,4 @@
+<resources>
+    <bitmap id="arrowUp" filename="images/arrowUp.png" />
+    <bitmap id="arrowDown" filename="images/arrowDown.png" />
+</resources>
