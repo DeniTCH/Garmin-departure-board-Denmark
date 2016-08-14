@@ -27,7 +27,7 @@ class DepatureBoard
 	hidden var responseData;
 	
 	// Stops related
-	var favouriteStops = ["292","471","7202"];	//TODO: To be autofilled from settings
+	var favouriteStops;	//TODO: To be autofilled from settings
 	hidden var stopsData;
 	
 	// Board related
@@ -36,7 +36,6 @@ class DepatureBoard
 		
 	hidden var drawingContext;
 
-	
 
 	const LABEL_COLOR_BUS_NORMAL = Gfx.COLOR_YELLOW;
 	const LABEL_COLOR_BUS_A = Gfx.COLOR_RED;
@@ -59,12 +58,11 @@ class DepatureBoard
 		SM_REQUEST_NEARBY_STOPS,
 		SM_WAIT_STOPS_RESPONSE,
 		SM_DETERMINE_STOP,
-		SM_NO_STOPS_TO_SHOW,
 		SM_REQUEST_BOARD,
 		SM_WAIT_BOARD_RESPONSE,
 		SM_SHOW_BOARD,
 		SM_DELAY_BEFORE_REQUEST,
-		SM_CONNECTION_ERROR,
+		SM_ERROR,
 		SM_DONE
 	}
 
@@ -76,8 +74,17 @@ class DepatureBoard
 		
 		progressBarView = new Ui.ProgressBar(Ui.loadResource(Rez.Strings.StrWaitingForPosition),null);    	
 		
-		timer = new Timer.Timer(); 
-        timer.start(method(:updateSM), 500, true);
+		//timer = new Timer.Timer(); 
+        //timer.start(method(:updateSM), 500, true);
+        favouriteStops = splitString(Application.getApp().getProperty("favouriteStops"),',');
+        
+        for(var i=0;i<favouriteStops.size();i++)
+        {
+        	System.println("Returned: " + favouriteStops[i]);
+        }
+
+
+        System.exit();
 	}
 
 	// Callback function for position request
@@ -131,7 +138,7 @@ class DepatureBoard
 			
 			if(stateTimeout == 0)
 			{
-				currentState = SM_STATE_TIMEOUT_ERROR;
+				currentState = SM_ERROR;
 			}
 			
 		
@@ -150,13 +157,22 @@ class DepatureBoard
 				{
 					//TODO: push view
 					System.println("No stops to show");
-					currentState = SM_NO_STOPS_TO_SHOW; 
+					
+					var errorView = new ErrorView();
+					errorView.setErrorTypeNoStops();
+					Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);					
+					currentState = SM_ERROR; 
 				}				
 			}else if(responseCode != null)
 			{
 	        	//TODO: Show failed connection message
 	            System.println("Failed to get stops. Response code: " + responseCode);
-	            currentState = SM_CONNECTION_ERROR;		
+	            
+				var errorView = new ErrorView();
+				errorView.setErrorTypeNoConnection();
+				Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);
+
+	            currentState = SM_ERROR;		
 			}						
 		}
 		
@@ -223,10 +239,14 @@ class DepatureBoard
 								
 				
 				currentState = SM_SHOW_BOARD;
-	        } else if(responseCode != null) {
-	        	//TODO: Show failed connection message
+	        } else if(responseCode != null) {	        	
 	            System.println("Failed to retrive board. Response code: " + responseCode);
-	            currentState = SM_CONNECTION_ERROR;
+
+				var errorView = new ErrorView();
+				errorView.setErrorTypeNoConnection();
+				Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);
+
+	            currentState = SM_ERROR;
 	        }			
 		}
 		else if(currentState == SM_SHOW_BOARD)
@@ -239,12 +259,7 @@ class DepatureBoard
 		{
 			//Ui.requestUpdate();
 		}
-		// Error states
-		else if(currentState == SM_CONNECTION_ERROR)
-		{}
-		else if(currentState == SM_NO_STOPS_TO_SHOW)
-		{}
-		else if(currentState == SM_STATE_TIMEOUT_ERROR)
+		else if(currentState == SM_ERROR)
 		{}
 	}
 	
@@ -257,45 +272,57 @@ class DepatureBoard
        	for(var i=0;i<departureBoardData.size();i++)
        	{
        		var now = Time.now();
-       		var date_key = "date";
-       		var time_key = "time";
+       		var dateKey = "date";
+       		var timeKey = "time";
        		
        		//System.println(departureBoardData[i]);
        		
        		// Calculate time to transport
        		if(departureBoardData[i].hasKey("rtTime"))
        		{
-				time_key = "rtTime"; 
+				timeKey = "rtTime"; 
 			}
 			
 			if(departureBoardData[i].hasKey("rtDate"))
        		{
-				date_key = "rtDate";
+				dateKey = "rtDate";
 			}
+
        		// Parse time and date from response
-       		/*
-       		System.println("year: " + departureBoardData[i].get(date_key).substring(6,8).toNumber()+2000);
-       		System.println("month: " + departureBoardData[i].get(date_key).substring(3,5).toNumber());
-       		System.println("day: " + departureBoardData[i].get(date_key).substring(0,2).toNumber());
-       		System.println("hour: " + departureBoardData[i].get(time_key).substring(0,2).toNumber());
-       		System.println("minute: " + departureBoardData[i].get(time_key).substring(3,5).toNumber());
+       		var dateArray = splitString(departureBoardData[i].get(dateKey),'.');
+			var timeArray = splitString(departureBoardData[i].get(timeKey),'.');
        		
-   			var arrivalMoment = Greg.moment({:year => departureBoardData[i].get(date_key).substring(6,8).toNumber()+2000,
-       		:month => departureBoardData[i].get(date_key).substring(3,5).toNumber(),
-       		:day => departureBoardData[i].get(date_key).substring(0,2).toNumber(),
-       		:hour => departureBoardData[i].get(time_key).substring(0,2).toNumber(),
-       		:minute => departureBoardData[i].get(time_key).substring(3,5).toNumber(),
+       		var arrivalMoment = Greg.moment({:year => dateArray[2].toNumber()+2000,
+       		:month => dateArray[1].toNumber(),
+       		:day => dateArray[0].toNumber(),
+       		:hour => timeArray[0].toNumber(),
+       		:minute => timeArray[1].toNumber(),
+       		:second => 0});
+
+       		/*
+       		System.println("year: " + departureBoardData[i].get(dateKey).substring(6,8).toNumber()+2000);
+       		System.println("month: " + departureBoardData[i].get(dateKey).substring(3,5).toNumber());
+       		System.println("day: " + departureBoardData[i].get(dateKey).substring(0,2).toNumber());
+       		System.println("hour: " + departureBoardData[i].get(timeKey).substring(0,2).toNumber());
+       		System.println("minute: " + departureBoardData[i].get(timeKey).substring(3,5).toNumber());
+       		
+   			var arrivalMoment = Greg.moment({:year => departureBoardData[i].get(dateKey).substring(6,8).toNumber()+2000,
+       		:month => departureBoardData[i].get(dateKey).substring(3,5).toNumber(),
+       		:day => departureBoardData[i].get(dateKey).substring(0,2).toNumber(),
+       		:hour => departureBoardData[i].get(timeKey).substring(0,2).toNumber(),
+       		:minute => departureBoardData[i].get(timeKey).substring(3,5).toNumber(),
        		:second => 0});
        		*/
        		
-       		// Fake data
+       		/* Fake data
        		var arrivalMoment = Greg.moment({:year => 2016,
        		:month => 8,
        		:day => 8,
        		:hour => 10,
        		:minute => 0,
        		:second => 0});
-       		
+       		*/
+
        		var diff_min = (arrivalMoment.subtract(now).value().toNumber() - System.getClockTime().timeZoneOffset)/60;
        		
 			//System.println("NOW: " + now.value().toString());
@@ -393,6 +420,30 @@ class DepatureBoard
 		
 	}
 	
+	function splitString(string, separator)
+	{
+		var items = [];
+		var str = string.toCharArray();
+		var lastSep = 0;
+
+		for(var i=0; i<str.size(); i++)
+		{
+			if(str[i] == separator || i == str.size() - 1)
+			{			
+				if(i == str.size() - 1)
+				{
+					items.add(string.substring(lastSep,i+1));	
+				}else
+				{
+					items.add(string.substring(lastSep,i));	
+					lastSep = i+1;
+				}				
+			}
+		}
+
+		return items;
+	}
+
 	// Returns a string in a readable hr min format
 	function generateReadableMinutes(minutes)
 	{
