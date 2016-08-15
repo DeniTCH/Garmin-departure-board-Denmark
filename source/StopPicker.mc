@@ -37,9 +37,10 @@ class StopPicker extends Ui.Picker
 	function initialize(data)
 	{	
 		var title = new Ui.Text({:text=>Rez.Strings.StrChooseStop, :locX =>Ui.LAYOUT_HALIGN_CENTER, :locY=>Ui.LAYOUT_VALIGN_BOTTOM, :color=>Gfx.COLOR_WHITE});		
-		var nextArrow = new Ui.Bitmap({:rezId=>Rez.Drawables.arrowDown, :locX=>Ui.LAYOUT_HALIGN_RIGHT, :LocY=>Ui.LAYOUT_VALIGN_BOTTOM});
-		var previousArrow = new Ui.Bitmap({:rezId=>Rez.Drawables.arrowUp, :locX=>Ui.LAYOUT_HALIGN_LEFT, :LocY=>Ui.LAYOUT_VALIGN_BOTTOM});		
+		var nextArrow = new Ui.Bitmap({:rezId=>Rez.Drawables.arrowDown_bitmap, :locX=>Ui.LAYOUT_HALIGN_RIGHT, :LocY=>Ui.LAYOUT_VALIGN_BOTTOM});
+		var previousArrow = new Ui.Bitmap({:rezId=>Rez.Drawables.arrowUp_bitmap, :locX=>Ui.LAYOUT_HALIGN_LEFT, :LocY=>Ui.LAYOUT_VALIGN_BOTTOM});		
 		var factory = new ListFactory(data);
+
 		
 		System.println("Picker data:" + data);
 		

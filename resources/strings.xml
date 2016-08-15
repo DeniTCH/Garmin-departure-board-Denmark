@@ -1,5 +1,5 @@
 <strings>
-    <string id="AppName">Departure Board</string>
+    <string id="AppName">DepartureBoard</string>
     <string id="AppVersionTitle">App Version</string>
     <string id="FavouriteStopsPrompt">Favourite stops (comma separated)</string>
     <string id="UseBusPrompt">Show busses</string>
@@ -15,5 +15,8 @@
     <string id="StrNoStops">No stops!</string>
     <string id="StrHrId">h</string>
     <string id="StrMinId">m</string>
-        
+    <string id="ErrMsgNoConnectionStr">No connection!</string>
+    <string id="ErrMsgNoPositionStr">No position!</string>
+    <string id="ErrMsgNoStops">No stops!</string>
+    <string id="ErrMsgNoPhone">No phone!</string>
 </strings>

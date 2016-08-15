@@ -4,14 +4,12 @@ using Toybox.Communications as Comm;
 using Toybox.System as System;
 using Toybox.Graphics as Gfx;
 using Toybox.Time.Gregorian as Greg;
-
 // Global variable for delegates
 var selectedStop;
 
 class DepatureBoard
 {
 	hidden var timer;
-	hidden var stateTimeout;
 	hidden var currentState;
 	
 	// Views
@@ -27,16 +25,14 @@ class DepatureBoard
 	hidden var responseData;
 	
 	// Stops related
-	var favouriteStops;	//TODO: To be autofilled from settings
+	var favouriteStops;
 	hidden var stopsData;
 	
 	// Board related
 	hidden var valuesToDisplay = 6;
 	hidden var departureBoardData = new [valuesToDisplay];
-		
-	hidden var drawingContext;
-
-
+	
+	// Colors for transport labels
 	const LABEL_COLOR_BUS_NORMAL = Gfx.COLOR_YELLOW;
 	const LABEL_COLOR_BUS_A = Gfx.COLOR_RED;
 	const LABEL_COLOR_BUS_E = Gfx.COLOR_GREEN;
@@ -50,6 +46,11 @@ class DepatureBoard
 	const LABEL_COLOR_S_TRAIN_E = Gfx.COLOR_PURPLE;
 	const LABEL_COLOR_S_TRAIN_F = Gfx.COLOR_YELLOW;
 	const LABEL_COLOR_S_TRAIN_H = Gfx.COLOR_RED;
+
+	// Timer related
+	const TIMER_TRIGGER = 500;
+	hidden var timeoutCounter = 0;
+	hidden var timeoutEnabled = false;
 
 	enum
 	{
@@ -66,25 +67,29 @@ class DepatureBoard
 		SM_DONE
 	}
 
-	function initialize(dc)
+	// Constructor
+	function initialize()
 	{
-		drawingContext = dc;
 	
-		currentState = SM_GET_POSITION;
+		progressBarView = new Ui.ProgressBar(Ui.loadResource(Rez.Strings.StrWaitingForPosition),null);
 		
-		progressBarView = new Ui.ProgressBar(Ui.loadResource(Rez.Strings.StrWaitingForPosition),null);    	
-		
-		//timer = new Timer.Timer(); 
-        //timer.start(method(:updateSM), 500, true);
+		// Parse favourite stops from settings
         favouriteStops = splitString(Application.getApp().getProperty("favouriteStops"),',');
-        
-        for(var i=0;i<favouriteStops.size();i++)
+	    timer = new Timer.Timer();
+
+        if(System.getDeviceSettings().phoneConnected == false)
         {
-        	System.println("Returned: " + favouriteStops[i]);
+        	System.println("Phone not connected!");
+			var errorView = new ErrorView();
+			errorView.setErrorTypeNoPhone();
+			Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);								
+			currentState = SM_ERROR;
+        }else
+        {
+	        currentState = SM_GET_POSITION;
         }
 
-
-        System.exit();
+        timer.start(method(:updateSM), TIMER_TRIGGER, true);
 	}
 
 	// Callback function for position request
@@ -106,20 +111,59 @@ class DepatureBoard
 	{
 		return currentState; 
 	}
+
+	// Sets the timeout for a number of timer ticks
+	function setTimeout(timer_ticks)
+	{
+		timeoutEnabled = true;
+		timeoutCounter = timer_ticks;
+	}
+
+	// Clears the timeout
+	function clearTimeout()
+	{
+		timeoutEnabled = false;
+		timeoutCounter = 0;
+	}
+
+	// Checks if timed out
+	function checkTimeout()
+	{
+		if(timeoutEnabled && timeoutCounter == 0)
+		{
+			return true;
+		}else
+		{
+			return false;
+		}
+	}
 	
 	function updateSM()
 	{
+		// Handle timeout countdown, if set
+		if(timeoutEnabled && timeoutCounter != 0)
+		{
+			timeoutCounter = timeoutCounter  - 1;
+		}
+
 		if(currentState == SM_GET_POSITION)
 		{
-			//Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setCurrentLocation));		
-			
-			Ui.pushView(progressBarView, new ProgressBarViewInputDelegate(),Ui.SLIDE_IMMEDIATE);
-			stateTimeout = 20;
-			currentState = SM_WAITING_FOR_POSITION;
-			System.println("Getting position");
-			
-			// DEBUG
-			positionAcquiredFlag = true;
+			if(Position.getInfo().accuracy == Position.QUALITY_NOT_AVAILABLE)
+			{
+				var errorView = new ErrorView();
+				errorView.setErrorTypeNoPosition();
+				Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);					
+				currentState = SM_ERROR;				
+			}else
+			{
+				Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setCurrentLocation));			
+				Ui.pushView(progressBarView, new ProgressBarViewInputDelegate(),Ui.SLIDE_IMMEDIATE);				
+				currentState = SM_WAITING_FOR_POSITION;
+				System.println("Getting position");
+
+				// Enable timeout for getting position
+				setTimeout(40); // Equals 20 seconds
+			}
 			
 		// Await GPS position
 		}else if(currentState == SM_WAITING_FOR_POSITION)
@@ -127,6 +171,7 @@ class DepatureBoard
 			// If position has been acquired, request nearby stops
 			if(positionAcquiredFlag)
 			{
+				clearTimeout();	// Reset the timeout
 				System.println("Position acquired");
 				progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForStops));
 							
@@ -136,12 +181,14 @@ class DepatureBoard
         		currentState = SM_WAIT_STOPS_RESPONSE;
 			}
 			
-			if(stateTimeout == 0)
-			{
-				currentState = SM_ERROR;
+			if(checkTimeout())
+			{ 
+				var errorView = new ErrorView();
+				errorView.setErrorTypeNoPosition();
+				Ui.popView(Ui.SLIDE_IMMEDIATE);
+				Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);					
+				currentState = SM_ERROR;				
 			}
-			
-		
 		}
 		// Await web request response
 		else if(currentState == SM_WAIT_STOPS_RESPONSE)
@@ -160,6 +207,7 @@ class DepatureBoard
 					
 					var errorView = new ErrorView();
 					errorView.setErrorTypeNoStops();
+					Ui.popView(Ui.SLIDE_IMMEDIATE);
 					Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);					
 					currentState = SM_ERROR; 
 				}				
@@ -170,6 +218,7 @@ class DepatureBoard
 	            
 				var errorView = new ErrorView();
 				errorView.setErrorTypeNoConnection();
+				Ui.popView(Ui.SLIDE_IMMEDIATE);
 				Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);
 
 	            currentState = SM_ERROR;		
@@ -244,6 +293,7 @@ class DepatureBoard
 
 				var errorView = new ErrorView();
 				errorView.setErrorTypeNoConnection();
+				Ui.popView(Ui.SLIDE_IMMEDIATE);
 				Ui.pushView(errorView, new ErrorViewDelegate(), Ui.SLIDE_IMMEDIATE);
 
 	            currentState = SM_ERROR;
@@ -290,7 +340,7 @@ class DepatureBoard
 
        		// Parse time and date from response
        		var dateArray = splitString(departureBoardData[i].get(dateKey),'.');
-			var timeArray = splitString(departureBoardData[i].get(timeKey),'.');
+			var timeArray = splitString(departureBoardData[i].get(timeKey),':');
        		
        		var arrivalMoment = Greg.moment({:year => dateArray[2].toNumber()+2000,
        		:month => dateArray[1].toNumber(),
@@ -420,6 +470,7 @@ class DepatureBoard
 		
 	}
 	
+	// Returns an array containing the substrings of the provided string, separated by separator
 	function splitString(string, separator)
 	{
 		var items = [];
@@ -468,6 +519,6 @@ class ProgressBarViewInputDelegate extends Ui.BehaviorDelegate
 
 	function onBack()
 	{
-		System.exit();
+		Ui.popView(Ui.SLIDE_IMMEDIATE);
 	}
 }

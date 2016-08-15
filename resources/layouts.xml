@@ -1,0 +1,18 @@
+<resources>   
+    <layout id="NoConnectionErrorLayout">
+    	<drawable id="noConnectionDrawable"/>
+    	<label text="@Strings.ErrMsgNoConnectionStr" x="center" y="130" justification="Gfx.TEXT_JUSTIFY_CENTER" font="Gfx.FONT_MEDIUM" color="Gfx.COLOR_WHITE" />
+	</layout>
+	<layout id="NoPositionErrorLayout">
+		<drawable id="noPositionDrawable"/>
+    	<label text="@Strings.ErrMsgNoPositionStr" x="center" y="130" justification="Gfx.TEXT_JUSTIFY_CENTER" font="Gfx.FONT_MEDIUM" color="Gfx.COLOR_WHITE" />
+	</layout>
+	<layout id="NoStopsErrorLayout">
+		<drawable id="noStopsDrawable"/>
+    	<label text="@Strings.ErrMsgNoStops" x="center" y="130" justification="Gfx.TEXT_JUSTIFY_CENTER" font="Gfx.FONT_MEDIUM" color="Gfx.COLOR_WHITE" />
+	</layout>
+	<layout id="NoPhoneErrorLayout">
+		<drawable id="noPhoneDrawable"/>
+    	<label text="@Strings.ErrMsgNoPhone" x="center" y="130" justification="Gfx.TEXT_JUSTIFY_CENTER" font="Gfx.FONT_MEDIUM" color="Gfx.COLOR_WHITE" />
+	</layout>	
+</resources>

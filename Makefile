@@ -1,5 +1,6 @@
 TOOLKIT=/home/denis/bin/connectiq-sdk-win-2.1.0/bin
-MC=$(TOOLKIT)/monkeyc
+#MC=$(TOOLKIT)/monkeyc
+MC=java -Dfile.encoding=UTF-8 -Dapple.awt.UIElement=true -jar $(TOOLKIT)/monkeybrains.jar
 SIM=$(TOOLKIT)/simulator.exe
 SIM_LAUNCHER=$(TOOLKIT)/monkeydo
 
@@ -10,16 +11,16 @@ ROOTPATH=/home/denis/Repositories/programming_projects/garmin_departure_board
 OUTPUTDIR=bin
 FILENAME=DEPARTUREBOARD.PRG
 
-RESOURCES=-z $(ROOTPATH)/resources/drawables/drawables.xml -z $(ROOTPATH)/resources/layouts/layout.xml -z $(ROOTPATH)/resources/properties/properties.xml -z $(ROOTPATH)/resources/resources.xml -z $(ROOTPATH)/resources/settings/settings.xml -z $(ROOTPATH)/resources/strings/strings.xml
+RESOURCES=-z resources/bitmaps.xml -z resources/layouts.xml -z resources/properties.xml -z resources/settings.xml -z resources/strings.xml
 MANIFEST=manifest.xml
-SOURCES=source/StopPicker.mc source/DepartureBoardView.mc source/DepartureBoardClass.mc source/DepartureBoardApp.mc
+SOURCES=source/StopPicker.mc source/DepartureBoardView.mc source/DepartureBoardClass.mc source/DepartureBoardApp.mc source/ErrorView.mc
 KEY=/home/denis/bin/connectiq-sdk-win-2.1.0/developer_key
 
-all:
-	$(MC) -y $(KEY) -m $(MANIFEST) -o $(OUTPUTDIR)/$(FILENAME) -w $(RESOURCES) $(SOURCES)
-run:
+all: clean
+	$(MC) -y $(KEY) -m $(MANIFEST) -w $(RESOURCES) -o $(OUTPUTDIR)/$(FILENAME) $(SOURCES) -d $(DEVICE)
+run: all
 	$(SIM_LAUNCHER) $(ROOTPATH)/$(OUTPUTDIR)/$(FILENAME) $(DEVICE)
-deploy:
+deploy: all
 	cp $(OUTPUTDIR)/$(FILENAME) /media/denis/GARMIN/GARMIN/APPS/$(FILENAME)
 clean:
-	rm $(OUTPUTDIR)/*
+	rm -rf $(OUTPUTDIR)/*
