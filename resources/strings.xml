@@ -9,6 +9,7 @@
     <string id="SearchRadiusError">Enter a number!</string>
     <string id="VibratePrompt">Vibrate on update</string>
     <string id="StrChooseStop">Pick a stop:</string>
+    <string id="StrDistancePrefix">Dist:</string>
     <string id="StrWaitingForPosition">Waiting for position</string>
     <string id="StrWaitingForStops">Waiting for stops</string>
     <string id="StrWaitingForBoard">Waiting for board</string>

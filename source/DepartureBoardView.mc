@@ -31,7 +31,7 @@ class DepartureBoardView extends Ui.View {
 
     // Update the view
     function onUpdate(dc) {
-
+        
         if(db.getSMState() == db.SM_SHOW_BOARD || db.getSMState() == db.SM_DONE)
         {
 	        System.println("Updating view");

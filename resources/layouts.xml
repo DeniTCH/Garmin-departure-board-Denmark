@@ -15,4 +15,26 @@
 		<drawable id="noPhoneDrawable"/>
     	<label text="@Strings.ErrMsgNoPhone" x="center" y="130" justification="Gfx.TEXT_JUSTIFY_CENTER" font="Gfx.FONT_MEDIUM" color="Gfx.COLOR_WHITE" />
 	</layout>	
+
+	<layout id="StopChooserLayout">
+		<label id="chooseStopLabel" text="@Strings.StrChooseStop" x="center" y="0" font="Gfx.FONT_SMALL" color="Gfx.COLOR_WHITE" justification="Gfx.TEXT_JUSTIFY_CENTER" />
+
+		<label id="selectedItemLabel" text="" x="center" y="center" font="Gfx.FONT_SMALL" color="Gfx.COLOR_WHITE" justification="Gfx.TEXT_JUSTIFY_CENTER" />
+		<label id="distLabel" text="" x="center" y="115" font="Gfx.FONT_SMALL" color="Gfx.COLOR_WHITE" justification="Gfx.TEXT_JUSTIFY_CENTER" />
+
+		<button x="0" y="10" width="48" height="48">
+	        <state id="stateDefault" bitmap="@Drawables.arrowUp_bitmap" />
+	        <state id="stateHighlighted" bitmap="@Drawables.arrowUp_bitmap" />
+	        <state id="stateSelected" bitmap="@Drawables.arrowUp_bitmap" />
+	        <state id="stateDisabled" bitmap="@Drawables.arrowUp_bitmap" />
+	        <param name="behavior">onPreviousButton</param>
+    	</button>
+    	<button x="50" y="157" width="48" height="48">
+	        <state id="stateDefault" bitmap="@Drawables.arrowDown_bitmap" />
+	        <state id="stateHighlighted" bitmap="@Drawables.arrowDown_bitmap" />
+	        <state id="stateSelected" bitmap="@Drawables.arrowDown_bitmap" />
+	        <state id="stateDisabled" bitmap="@Drawables.arrowDown_bitmap" />
+	        <param name="behavior">onNextButton</param>
+    	</button>
+	</layout>
 </resources>

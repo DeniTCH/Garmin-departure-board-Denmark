@@ -2,7 +2,7 @@
 	<bitmap id="LauncherIcon" filename="images/icon.png" />
 	<bitmap id="arrowUp_bitmap" filename="images/arrowUp.png" />
 	<bitmap id="arrowDown_bitmap" filename="images/arrowDown.png" />
-
+	
 	<drawable-list id="noPositionDrawable">
 		<bitmap id="noPosition_bitmap" x="24" y="30" filename="images/no_position.png" />
 	</drawable-list>
@@ -18,4 +18,7 @@
 	<drawable-list id="noConnectionDrawable">
 		<bitmap id="noConnetion_bitmap" x="24" y="30" filename="images/no_connection.png" />	
 	</drawable-list>
+
+
+
 </resources>

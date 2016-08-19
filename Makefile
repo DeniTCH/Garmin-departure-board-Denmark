@@ -13,7 +13,7 @@ FILENAME=DEPARTUREBOARD.PRG
 
 RESOURCES=-z resources/bitmaps.xml -z resources/layouts.xml -z resources/properties.xml -z resources/settings.xml -z resources/strings.xml
 MANIFEST=manifest.xml
-SOURCES=source/StopPicker.mc source/DepartureBoardView.mc source/DepartureBoardClass.mc source/DepartureBoardApp.mc source/ErrorView.mc
+SOURCES=source/StopPicker.mc source/DepartureBoardView.mc source/DepartureBoardClass.mc source/DepartureBoardApp.mc source/ErrorView.mc source/NewPicker.mc
 KEY=/home/denis/bin/connectiq-sdk-win-2.1.0/developer_key
 
 all: clean

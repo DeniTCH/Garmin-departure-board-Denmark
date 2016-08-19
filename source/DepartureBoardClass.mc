@@ -4,8 +4,10 @@ using Toybox.Communications as Comm;
 using Toybox.System as System;
 using Toybox.Graphics as Gfx;
 using Toybox.Time.Gregorian as Greg;
+
 // Global variable for delegates
 var selectedStop;
+var stopSelectedFlag = false;
 
 class DepatureBoard
 {
@@ -236,7 +238,7 @@ class DepatureBoard
 	    			if(stopsData[i].get("id").equals(favouriteStops[j]))
 	    			{
 	    				System.println("Found one of the favourites: " + favouriteStops[j]);
-	    				selectedStop = stopsData[i].get("id");
+	    				selectedStop = stopsData[i];
 	    				currentState = SM_REQUEST_BOARD; 
 	    			}
 	    		}
@@ -245,15 +247,15 @@ class DepatureBoard
 	    	if (selectedStop == null)
 	    	{
 	    		System.println("Pushing picker");
-				Ui.pushView(new StopPicker(stopsData), new StopPickerDelegate(), Ui.SLIDE_IMMEDIATE);
+				Ui.pushView(new StopChooser(stopsData), new StopChooserDelegate(stopsData), Ui.SLIDE_IMMEDIATE);
 				currentState = SM_REQUEST_BOARD;				
 	    	}
 		}
 		else if(currentState == SM_REQUEST_BOARD)
 		{
-			if(selectedStop != null)
+			if(stopSelectedFlag)
 			{
-				System.println("Stop selected: " + selectedStop);
+				System.println("Stop selected: " + selectedStop.get("name"));
 				var now = System.getClockTime();
 		        var time = now.hour.toString() + "." + now.min.toString();        
 		        var dateinfo = Greg.info(Time.now(), Time.FORMAT_SHORT);
@@ -264,7 +266,7 @@ class DepatureBoard
 
 				System.println("Requesting board");		        		        
 		        responseCode = null;
-		        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + selectedStop + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+		        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
 		        
 		        progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForBoard));
 		        currentState = SM_WAIT_BOARD_RESPONSE;	
