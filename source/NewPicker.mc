@@ -5,9 +5,8 @@ class StopChooser extends Ui.View
 {
     function initialize(data)
     {
-        System.println(data);
-        selectedStop = data[0];
-        //mData = data;
+        $.selectedStop = data[0];
+        View.initialize();
     }
 
     function onLayout(dc)
@@ -17,8 +16,8 @@ class StopChooser extends Ui.View
 
     function onUpdate(dc)
     {
-        findDrawableById("selectedItemLabel").setText(selectedStop.get("name").substring(0,15));
-        findDrawableById("distLabel").setText(Ui.loadResource(Rez.Strings.StrDistancePrefix) + " " + selectedStop.get("distance"));
+        findDrawableById("selectedItemLabel").setText(DepartureBoard.truncateStopName($.selectedStop.get("name")));
+        findDrawableById("distLabel").setText(Ui.loadResource(Rez.Strings.StrDistancePrefix) + " " + $.selectedStop.get("distance") + "m");
         View.onUpdate(dc);   
     }
 }
@@ -31,6 +30,7 @@ class StopChooserDelegate extends Ui.BehaviorDelegate
     function initialize(data)
     {
         mData = data;
+        BehaviorDelegate.initialize();
     }
 
     function onNextButton()
@@ -38,7 +38,7 @@ class StopChooserDelegate extends Ui.BehaviorDelegate
         if(mSelectedIndex < mData.size() - 1)
         {
             mSelectedIndex = mSelectedIndex + 1;
-            selectedStop = mData[mSelectedIndex];
+            $.selectedStop = mData[mSelectedIndex];
             Ui.requestUpdate();
         }
     }
@@ -48,15 +48,15 @@ class StopChooserDelegate extends Ui.BehaviorDelegate
         if(mSelectedIndex > 0)
         {
             mSelectedIndex = mSelectedIndex - 1;
-            selectedStop = mData[mSelectedIndex];
+            $.selectedStop = mData[mSelectedIndex];
             Ui.requestUpdate();  
         }
     }
 
     function onAcceptButton()
     {
-        stopSelectedFlag = true;
+        System.println("Accept pressed");
+        $.stopSelectedFlag = true;
         Ui.popView(Ui.SLIDE_IMMEDIATE);
     }
-
 }

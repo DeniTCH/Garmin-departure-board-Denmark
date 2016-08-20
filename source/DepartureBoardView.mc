@@ -2,8 +2,6 @@ using Toybox.WatchUi as Ui;
 using Toybox.System;
 using Toybox.Graphics as Gfx;
 
-var errorShownFlag;
-
 class DepartureBoardView extends Ui.View {
 	
 	var db;
@@ -18,8 +16,9 @@ class DepartureBoardView extends Ui.View {
     {
         if(db == null)
         {
-            db = new DepatureBoard();    
+            db = new DepartureBoard.DepatureBoardClass();    
         }
+        //setLayout(Rez.Layouts.StopChooserLayout(dc));
     }
 
     // Called when this View is brought to the foreground. Restore
@@ -32,14 +31,36 @@ class DepartureBoardView extends Ui.View {
     // Update the view
     function onUpdate(dc) {
         
-        if(db.getSMState() == db.SM_SHOW_BOARD || db.getSMState() == db.SM_DONE)
+        var smState = db.getSMState();
+
+        if(smState == db.SM_SHOW_BOARD || smState == db.SM_DONE)
         {
 	        System.println("Updating view");
 	        db.drawDepartureBoard(dc);	                
-        }else if(db.getSMState() == db.SM_ERROR && errorShownFlag == true)
+        }
+        else if(smState == db.SM_ERROR_NO_CONNECTION)
         {
-            //Ui.popView(Ui.SLIDE_IMMEDIATE);
-            //System.exit();
+            System.println("Displaying no connection error");
+            setLayout(Rez.Layouts.NoConnectionErrorLayout(dc));
+            View.onUpdate(dc);
+        }
+        else if(smState == db.SM_ERROR_NO_POSITION)
+        {
+            System.println("Displaying no position error");
+            setLayout(Rez.Layouts.NoPositionErrorLayout(dc));
+            View.onUpdate(dc);
+        }
+        else if(smState == db.SM_ERROR_NO_STOPS)
+        {
+            System.println("Displaying no stops error");
+            setLayout(Rez.Layouts.NoStopsErrorLayout(dc));
+            View.onUpdate(dc);
+        }
+        else if(smState == db.SM_ERROR_NO_PHONE)
+        {
+            System.println("Displaying no phone error");
+            setLayout(Rez.Layouts.NoPhoneErrorLayout(dc));
+            View.onUpdate(dc);
         }
     }
 
