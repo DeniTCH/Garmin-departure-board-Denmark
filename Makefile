@@ -11,7 +11,7 @@ ROOTPATH=/home/denis/Repositories/programming_projects/garmin_departure_board
 OUTPUTDIR=bin
 FILENAME=DEPARTUREBOARD.PRG
 
-RESOURCES=-z resources/bitmaps.xml -z resources/layouts.xml -z resources/properties.xml -z resources/settings.xml -z resources/strings.xml
+RESOURCES=-z resources/bitmaps.xml -z resources/layouts.xml -z resources/properties.xml -z resources/settings.xml -z resources/strings.xml -z resources-dan/strings.xml
 MANIFEST=manifest.xml
 SOURCES=source/DepartureBoardView.mc source/DepartureBoardClass.mc source/DepartureBoardApp.mc source/NewPicker.mc
 KEY=/home/denis/bin/connectiq-sdk-win-2.1.0/developer_key

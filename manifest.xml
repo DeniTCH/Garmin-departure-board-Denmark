@@ -12,6 +12,7 @@
 
         <iq:languages>
             <iq:language>eng</iq:language>
+            <iq:language>dan</iq:language>
         </iq:languages>
 
     </iq:application>

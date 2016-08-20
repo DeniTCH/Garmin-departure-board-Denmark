@@ -1,0 +1,18 @@
+<strings>
+    <string id="AppName">Afgangstavle</string>
+    <string id="AppVersionTitle">App Version</string>
+    <string id="FavouriteStopsPrompt">Favorit stop (kommasepareret)</string>
+    <string id="SearchRadiusPrompt">Søg stationer i radius af m</string>
+    <string id="SearchRadiusError">Indtast et tal!</string>
+    <string id="StrChooseStop">Vælg stoppested:</string>
+    <string id="StrDistancePrefix">Afstand:</string>
+    <string id="StrWaitingForPosition">Venter på position</string>
+    <string id="StrWaitingForStops">Henter stop</string>
+    <string id="StrWaitingForBoard">Henter tavle</string>
+    <string id="StrHrId"> h</string>
+    <string id="StrMinId"> min</string>
+    <string id="ErrMsgNoConnectionStr">Ingen forbindelse!</string>
+    <string id="ErrMsgNoPositionStr">Ingen position!</string>
+    <string id="ErrMsgNoStops">Ingen stoppesteder!</string>
+    <string id="ErrMsgNoPhone">Ikke tilsluttet!</string>
+</strings>

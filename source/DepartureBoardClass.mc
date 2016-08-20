@@ -313,7 +313,7 @@ module DepartureBoard
 			System.println("Drawing departure board");
 		   	dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
 	   		dc.clear();
-	   	
+
 	       	for(var i=0;i<departureBoardData.size();i++)
 	       	{
 	       		var now = Time.now();
