@@ -41,8 +41,12 @@ module DepartureBoard
 		const LABEL_COLOR_BUS_A = Gfx.COLOR_RED;
 		const LABEL_COLOR_BUS_E = Gfx.COLOR_GREEN;
 		const LABEL_COLOR_BUS_S = Gfx.COLOR_BLUE;	
+		const LABEL_COLOR_BUS_X = 0x0000AA;	
+		const LABEL_COLOR_BUS_NB = 0xAAAAAA;
+		const LABEL_COLOR_BUS_EXB = Gfx.COLOR_WHITE;
 		const LABEL_COLOR_LOCAL_TRAIN = 0x000055;
 		const LABEL_COLOR_REG_TRAIN = 0x00AA00;
+		const LABEL_COLOR_IC_TRAIN = Gfx.COLOR_RED;
 		const LABEL_COLOR_S_TRAIN_A = Gfx.COLOR_BLUE;
 		const LABEL_COLOR_S_TRAIN_B = Gfx.COLOR_DK_GREEN;
 		const LABEL_COLOR_S_TRAIN_BX = Gfx.COLOR_GREEN;
@@ -259,8 +263,9 @@ module DepartureBoard
 					System.println("Requesting board");		        		        
 			        responseCode = null;
 			        //Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-			     	Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008603322" + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-			    
+			     	Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=100005000" + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			    	//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=000029944" + "&date=20.08.2016&time=01:00" + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			        
 			        progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForBoard));
 			        currentState = SM_WAIT_BOARD_RESPONSE;	
 				}
@@ -346,12 +351,12 @@ module DepartureBoard
 
 	       		var diff_min = (arrivalMoment.subtract(now).value().toNumber() - System.getClockTime().timeZoneOffset)/60;
 	       		       	
-	       		drawDepartureTableLine(dc, i, departureBoardData[i].get("name"), departureBoardData[i].get("finalStop"), diff_min); 
+	       		drawDepartureTableLine(dc, i,departureBoardData[i].get("type"), departureBoardData[i].get("name"), departureBoardData[i].get("finalStop"), diff_min); 
 	       	}	       	
 		}
 		
 		// Function used to draw a specific departure board line	
-		function drawDepartureTableLine(dc, layout_line_nr, line, destination, minutes) 
+		function drawDepartureTableLine(dc, layout_line_nr,type, line, destination, minutes) 
 		{
 			var base_x_offset = 5;
 			var base_y_offset = 6;
@@ -361,48 +366,27 @@ module DepartureBoard
 			
 			var time_text = generateReadableMinutes(minutes); 
 			
-			// Draw the line icon
-			if(line.find("Bus") != null)
+			if(type.equals("IC"))
 			{
-				if(line.find("A"))
-				{
-					dc.setColor(LABEL_COLOR_BUS_A, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("E"))
-				{
-					dc.setColor(LABEL_COLOR_BUS_E, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("S"))
-				{
-					dc.setColor(LABEL_COLOR_BUS_S, Gfx.COLOR_TRANSPARENT);
-				}else
-				{
-					dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
-				}
+				dc.setColor(LABEL_COLOR_IC_TRAIN, Gfx.COLOR_TRANSPARENT);
 				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
 				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(4,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
-			}else if(line.find("Lokalbane") != null)
+				dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "IC", Gfx.TEXT_JUSTIFY_CENTER);
+			}
+			else if(type.equals("LYN"))
 			{
-				dc.setColor(LABEL_COLOR_LOCAL_TRAIN, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "L", Gfx.TEXT_JUSTIFY_CENTER);
-			}else if(line.find("RE") != null)
+				//TODO: Lyntog
+			}
+			else if(type.equals("REG"))
 			{
 				dc.setColor(LABEL_COLOR_REG_TRAIN, Gfx.COLOR_TRANSPARENT);
 				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
 				
 				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "RE", Gfx.TEXT_JUSTIFY_CENTER);			
-			}else if(line.find("Metro") != null)
-			{
-				dc.setColor(LABEL_COLOR_METRO, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
-			}else
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "RE", Gfx.TEXT_JUSTIFY_CENTER);
+			}
+			else if(type.equals("S"))
 			{
 				if(line.find("A") != null)
 				{
@@ -430,8 +414,103 @@ module DepartureBoard
 				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
 				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line, Gfx.TEXT_JUSTIFY_CENTER);		
 			}
-			
-			// Draw strings common for bus and train
+			else if(type.equals("TOG"))
+			{
+				dc.setColor(LABEL_COLOR_LOCAL_TRAIN, Gfx.COLOR_TRANSPARENT);
+				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "L", Gfx.TEXT_JUSTIFY_CENTER);
+			}
+			else if(type.equals("BUS"))
+			{
+				if(line.find("A"))
+				{
+					dc.setColor(LABEL_COLOR_BUS_A, Gfx.COLOR_TRANSPARENT);
+				}else if(line.find("E"))
+				{
+					dc.setColor(LABEL_COLOR_BUS_E, Gfx.COLOR_TRANSPARENT);
+				}else if(line.find("S"))
+				{
+					dc.setColor(LABEL_COLOR_BUS_S, Gfx.COLOR_TRANSPARENT);
+				}else
+				{
+					dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
+				}
+				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(4,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+			}
+			else if(type.equals("EXB"))
+			{
+				if(line.find("X Bus") != null)
+				{
+					dc.setColor(LABEL_COLOR_BUS_X, Gfx.COLOR_TRANSPARENT);
+					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+				}
+				else if(line.find("Bus") != null)
+				{
+					dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
+					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(4,line.length()), Gfx.TEXT_JUSTIFY_CENTER);	
+				}
+			}
+			else if(type.equals("NB"))
+			{
+
+				dc.setColor(LABEL_COLOR_BUS_NB, Gfx.COLOR_TRANSPARENT);
+				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(7,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+			}
+			else if(type.equals("TB"))
+			{
+				if(line.find("Havnebus") != null)
+				{
+					dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
+					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(9,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+				}
+				else if(line.find("Bybus") != null)
+				{
+					if(line.find("A"))
+					{
+						dc.setColor(LABEL_COLOR_BUS_A, Gfx.COLOR_TRANSPARENT);
+					}
+					else
+					{
+						dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
+					}
+					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+				}
+
+			}
+			else if(type.equals("F"))
+			{
+				//TODO: Ferry
+			}
+			else if(type.equals("M"))
+			{
+				dc.setColor(LABEL_COLOR_METRO, Gfx.COLOR_TRANSPARENT);
+				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+			}
+
+			// Draw strings common for different transport types
 			dc.drawText(base_x_offset + icon_width + 5, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 4), Gfx.FONT_TINY, time_text, Gfx.TEXT_JUSTIFY_LEFT);	
 			// Check if string is too long for screen size
 			if(destination.length() > 15)

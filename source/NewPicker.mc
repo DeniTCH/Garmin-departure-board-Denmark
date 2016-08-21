@@ -57,8 +57,6 @@ class StopChooserDelegate extends Ui.BehaviorDelegate
                 Ui.requestUpdate();  
             }
         }
-
-
     }
 
     function onAcceptButton()
