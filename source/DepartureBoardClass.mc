@@ -9,8 +9,6 @@ using Toybox.Time.Gregorian as Greg;
 var selectedStop;
 var stopSelectedFlag = false;
 
-//var dummyStops = {distance=>16, x=>12504705, y=>55739628, id=>7202, name=>Vandt├Ñrnsvej (S├╕borg Hovedgade)}, {distance=>51, x=>12505739, y=>55739530, id=>320, name=>S├╕borg Hovedgade (Hagavej)}, {distance=>112, x=>12506090, y=>55740303, id=>291, name=>Christianeh├╕j (Hagavej)}, {distance=>119, x=>12504831, y=>55738469, id=>4705, name=>S├╕borg Hovedgade (Vandt├Ñrnsvej)}, {distance=>246, x=>12501874, y=>55740950, id=>7203, name=>Buddinge Skole (S├╕borg Hovedgade)}, {distance=>311, x=>12508445, y=>55737570, id=>319, name=>S├╕borg Torv (S├╕borg Hovedgade)};
-//var dummyBoard = {};
 module DepartureBoard
 {
 	class DepatureBoardClass
@@ -52,6 +50,7 @@ module DepartureBoard
 		const LABEL_COLOR_S_TRAIN_E = Gfx.COLOR_PURPLE;
 		const LABEL_COLOR_S_TRAIN_F = Gfx.COLOR_YELLOW;
 		const LABEL_COLOR_S_TRAIN_H = Gfx.COLOR_RED;
+		const LABEL_COLOR_METRO = 0xAA0000;
 
 		// Timer related
 		const TIMER_TRIGGER = 500;
@@ -259,8 +258,9 @@ module DepartureBoard
 
 					System.println("Requesting board");		        		        
 			        responseCode = null;
-			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-			        
+			        //Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			     	Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008603322" + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			    
 			        progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForBoard));
 			        currentState = SM_WAIT_BOARD_RESPONSE;	
 				}
@@ -320,7 +320,7 @@ module DepartureBoard
 	       		var dateKey = "date";
 	       		var timeKey = "time";
 	       		
-	       		//System.println(departureBoardData[i]);
+	       		System.println(departureBoardData[i]);
 	       		
 	       		// Calculate time to transport
 	       		if(departureBoardData[i].hasKey("rtTime"))
@@ -395,6 +395,13 @@ module DepartureBoard
 				
 				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
 				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "RE", Gfx.TEXT_JUSTIFY_CENTER);			
+			}else if(line.find("Metro") != null)
+			{
+				dc.setColor(LABEL_COLOR_METRO, Gfx.COLOR_TRANSPARENT);
+				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
 			}else
 			{
 				if(line.find("A") != null)
@@ -474,6 +481,27 @@ module DepartureBoard
 			{
 				return minutes + Ui.loadResource(Rez.Strings.StrMinId);
 			}
+		}
+
+		// Returns a string, which appends bus and train show settings to the request URL
+		function generateTransportShowSettings()
+		{
+			var settings = "";
+			System.println("UseBus: " + Application.getApp().getProperty("useBus"));
+			if(Application.getApp().getProperty("useTrain") == false)
+			{
+				settings = settings + "&useTog=0";
+			}
+			if(Application.getApp().getProperty("useBuss") == false)
+			{
+				settings = settings + "&useBus=0";
+			}
+			if(Application.getApp().getProperty("useMetro") == false)
+			{
+				settings = settings + "&useMetro=0";
+			}
+			System.println("Request settings: " + settings);
+			return settings;
 		}
 
 	}
