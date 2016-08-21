@@ -5,7 +5,17 @@
 	<setting propertyKey="@Properties.favouriteStops" title="@Strings.FavouriteStopsPrompt">
 		<settingConfig type="alphaNumeric" required="true"/>
 	</setting>
+	<setting propertyKey="@Properties.useBus" title="@Strings.UseBusPrompt">
+		<settingConfig type="boolean"/>
+	</setting>
+	<setting propertyKey="@Properties.useTrain" title="@Strings.UseTrainPrompt">
+		<settingConfig type="boolean"/>
+	</setting>
+	<setting propertyKey="@Properties.useMetro" title="@Strings.UseMetroPrompt">
+		<settingConfig type="boolean"/>
+	</setting>
 	<setting propertyKey="@Properties.searchRadius" title="@Strings.SearchRadiusPrompt">
 		<settingConfig type="numeric" errorMessage="@Strings.SearchRadiusError"/>
 	</setting>
+
 </settings>

@@ -3,13 +3,15 @@
     <string id="AppVersionTitle">App Version</string>
     <string id="FavouriteStopsPrompt">Favourite stops (comma separated)</string>
     <string id="SearchRadiusPrompt">Station search radius in m</string>
+    <string id="UseBusPrompt">Use bus</string>
+    <string id="UseTrainPrompt">Use train</string>
+    <string id="UseMetroPrompt">Use metro</string>
     <string id="SearchRadiusError">Enter a number!</string>
     <string id="StrChooseStop">Pick a stop:</string>
     <string id="StrDistancePrefix">Distance:</string>
     <string id="StrWaitingForPosition">Waiting for position</string>
     <string id="StrWaitingForStops">Waiting for stops</string>
     <string id="StrWaitingForBoard">Waiting for board</string>
-    <string id="StrNoStops">No stops!</string>
     <string id="StrHrId"> h</string>
     <string id="StrMinId"> min</string>
     <string id="ErrMsgNoConnectionStr">No connection!</string>

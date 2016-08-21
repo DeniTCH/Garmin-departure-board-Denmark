@@ -1,7 +1,9 @@
 <resources>
 	<bitmap id="launcherIcon_bitmap" filename="images/icon.png" />
-	
+	<bitmap id="ferryIcon_bitmap" filename="images/ferry.png" dithering="floyd_steinberg"/>
+
 	<drawable-list id="busStopSignDrawable">
+
 		<shape type="rectangle" x="5" y="58" width="138" height="60" color="Gfx.COLOR_YELLOW" corner_radius="3" border_width="2" border_color="Gfx.COLOR_WHITE" />
 		<shape type="rectangle" x="69" y="118" width="2" height="97" color="Gfx.COLOR_BLACK" border_width="2" border_color="Gfx.COLOR_WHITE" />
 		<shape type="rectangle" x="79" y="118" width="2" height="97" color="Gfx.COLOR_BLACK" border_width="2" border_color="Gfx.COLOR_WHITE" />

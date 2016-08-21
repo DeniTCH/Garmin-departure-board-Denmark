@@ -3,6 +3,9 @@
     <string id="AppVersionTitle">App Version</string>
     <string id="FavouriteStopsPrompt">Favorit stop (kommasepareret)</string>
     <string id="SearchRadiusPrompt">Søg stationer i radius af m</string>
+    <string id="UseBusPrompt">Vis busser</string>
+    <string id="UseTrainPrompt">Vis tog</string>
+    <string id="UseMetroPrompt">Vis metro</string>
     <string id="SearchRadiusError">Indtast et tal!</string>
     <string id="StrChooseStop">Vælg stoppested:</string>
     <string id="StrDistancePrefix">Afstand:</string>

@@ -43,7 +43,7 @@ module DepartureBoard
 		const LABEL_COLOR_BUS_S = Gfx.COLOR_BLUE;	
 		const LABEL_COLOR_BUS_X = 0x0000AA;	
 		const LABEL_COLOR_BUS_NB = 0xAAAAAA;
-		const LABEL_COLOR_BUS_EXB = Gfx.COLOR_WHITE;
+		const LABEL_COLOR_BUS_TOGBUS= Gfx.COLOR_WHITE;
 		const LABEL_COLOR_LOCAL_TRAIN = 0x000055;
 		const LABEL_COLOR_REG_TRAIN = 0x00AA00;
 		const LABEL_COLOR_IC_TRAIN = Gfx.COLOR_RED;
@@ -55,6 +55,7 @@ module DepartureBoard
 		const LABEL_COLOR_S_TRAIN_F = Gfx.COLOR_YELLOW;
 		const LABEL_COLOR_S_TRAIN_H = Gfx.COLOR_RED;
 		const LABEL_COLOR_METRO = 0xAA0000;
+		const LABEL_COLOR_FERRY = 0x000055;
 
 		// Timer related
 		const TIMER_TRIGGER = 500;
@@ -263,8 +264,8 @@ module DepartureBoard
 					System.println("Requesting board");		        		        
 			        responseCode = null;
 			        //Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-			     	Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=100005000" + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-			    	//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=000029944" + "&date=20.08.2016&time=01:00" + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			     	//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008600432" + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			    	Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008600840" + "&date=22.08.2016&time=05:35" + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
 			        
 			        progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForBoard));
 			        currentState = SM_WAIT_BOARD_RESPONSE;	
@@ -319,39 +320,42 @@ module DepartureBoard
 		   	dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
 	   		dc.clear();
 
+	   		System.println(departureBoardData);
+
 	       	for(var i=0;i<departureBoardData.size();i++)
 	       	{
-	       		var now = Time.now();
-	       		var dateKey = "date";
-	       		var timeKey = "time";
-	       		
-	       		System.println(departureBoardData[i]);
-	       		
-	       		// Calculate time to transport
-	       		if(departureBoardData[i].hasKey("rtTime"))
+	       		if(departureBoardData[i] != null)
 	       		{
-					timeKey = "rtTime"; 
-				}
-				
-				if(departureBoardData[i].hasKey("rtDate"))
-	       		{
-					dateKey = "rtDate";
-				}
+		       		var now = Time.now();
+		       		var dateKey = "date";
+		       		var timeKey = "time";
+		       		
+		       		// Calculate time to transport
+		       		if(departureBoardData[i].hasKey("rtTime"))
+		       		{
+						timeKey = "rtTime"; 
+					}
+					
+					if(departureBoardData[i].hasKey("rtDate"))
+		       		{
+						dateKey = "rtDate";
+					}
 
-	       		// Parse time and date from response
-	       		var dateArray = splitString(departureBoardData[i].get(dateKey),'.');
-				var timeArray = splitString(departureBoardData[i].get(timeKey),':');
-	       		
-	       		var arrivalMoment = Greg.moment({:year => dateArray[2].toNumber()+2000,
-	       		:month => dateArray[1].toNumber(),
-	       		:day => dateArray[0].toNumber(),
-	       		:hour => timeArray[0].toNumber(),
-	       		:minute => timeArray[1].toNumber(),
-	       		:second => 0});
+		       		// Parse time and date from response
+		       		var dateArray = splitString(departureBoardData[i].get(dateKey),'.');
+					var timeArray = splitString(departureBoardData[i].get(timeKey),':');
+		       		
+		       		var arrivalMoment = Greg.moment({:year => dateArray[2].toNumber()+2000,
+		       		:month => dateArray[1].toNumber(),
+		       		:day => dateArray[0].toNumber(),
+		       		:hour => timeArray[0].toNumber(),
+		       		:minute => timeArray[1].toNumber(),
+		       		:second => 0});
 
-	       		var diff_min = (arrivalMoment.subtract(now).value().toNumber() - System.getClockTime().timeZoneOffset)/60;
-	       		       	
-	       		drawDepartureTableLine(dc, i,departureBoardData[i].get("type"), departureBoardData[i].get("name"), departureBoardData[i].get("finalStop"), diff_min); 
+		       		var diff_min = (arrivalMoment.subtract(now).value().toNumber() - System.getClockTime().timeZoneOffset)/60;
+		       		       	
+		       		drawDepartureTableLine(dc, i,departureBoardData[i].get("type"), departureBoardData[i].get("name"), departureBoardData[i].get("finalStop"), diff_min); 
+		       	}
 	       	}	       	
 		}
 		
@@ -371,12 +375,16 @@ module DepartureBoard
 				dc.setColor(LABEL_COLOR_IC_TRAIN, Gfx.COLOR_TRANSPARENT);
 				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
 				
-				dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_TRANSPARENT); 
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
 				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "IC", Gfx.TEXT_JUSTIFY_CENTER);
 			}
 			else if(type.equals("LYN"))
 			{
-				//TODO: Lyntog
+				dc.setColor(LABEL_COLOR_IC_TRAIN, Gfx.COLOR_TRANSPARENT);
+				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "ICL", Gfx.TEXT_JUSTIFY_CENTER);
 			}
 			else if(type.equals("REG"))
 			{
@@ -391,22 +399,28 @@ module DepartureBoard
 				if(line.find("A") != null)
 				{
 					dc.setColor(LABEL_COLOR_S_TRAIN_A, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("B") != null)
+				}
+				else if(line.find("B") != null)
 				{
 					dc.setColor(LABEL_COLOR_S_TRAIN_B, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("Bx") != null)
+				}
+				else if(line.find("Bx") != null)
 				{
 					dc.setColor(LABEL_COLOR_S_TRAIN_BX, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("C") != null)
+				}
+				else if(line.find("C") != null)
 				{
 					dc.setColor(LABEL_COLOR_S_TRAIN_C, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("E") != null)
+				}
+				else if(line.find("E") != null)
 				{
 					dc.setColor(LABEL_COLOR_S_TRAIN_E, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("F") != null)
+				}
+				else if(line.find("F") != null)
 				{
 					dc.setColor(LABEL_COLOR_S_TRAIN_F, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("H") != null)
+				}
+				else if(line.find("H") != null)
 				{
 					dc.setColor(LABEL_COLOR_S_TRAIN_H, Gfx.COLOR_TRANSPARENT);
 				}
@@ -416,21 +430,53 @@ module DepartureBoard
 			}
 			else if(type.equals("TOG"))
 			{
-				dc.setColor(LABEL_COLOR_LOCAL_TRAIN, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "L", Gfx.TEXT_JUSTIFY_CENTER);
+				if(line.find("RE") != null)
+				{
+					dc.setColor(LABEL_COLOR_REG_TRAIN, Gfx.COLOR_TRANSPARENT);
+					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "Ø", Gfx.TEXT_JUSTIFY_CENTER);
+				}
+				else if(line.find("EC") != null)
+				{
+					dc.setColor(LABEL_COLOR_REG_TRAIN, Gfx.COLOR_TRANSPARENT);
+					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "EC", Gfx.TEXT_JUSTIFY_CENTER);					
+				}
+				else if(line.find("Togbus") != null)
+				{
+					dc.setColor(LABEL_COLOR_BUS_TOGBUS, Gfx.COLOR_TRANSPARENT);
+					//dc.setPenWidth(2);
+					dc.drawRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					//dc.setPenWidth(1);
+					//dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "TB", Gfx.TEXT_JUSTIFY_CENTER);					
+				}
+				else
+				{
+					dc.setColor(LABEL_COLOR_LOCAL_TRAIN, Gfx.COLOR_TRANSPARENT);
+					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+					
+					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "L", Gfx.TEXT_JUSTIFY_CENTER);
+				}
 			}
 			else if(type.equals("BUS"))
 			{
 				if(line.find("A"))
 				{
 					dc.setColor(LABEL_COLOR_BUS_A, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("E"))
+				}
+				else if(line.find("E"))
 				{
 					dc.setColor(LABEL_COLOR_BUS_E, Gfx.COLOR_TRANSPARENT);
-				}else if(line.find("S"))
+				}
+				else if(line.find("S"))
 				{
 					dc.setColor(LABEL_COLOR_BUS_S, Gfx.COLOR_TRANSPARENT);
 				}else
@@ -499,7 +545,15 @@ module DepartureBoard
 			}
 			else if(type.equals("F"))
 			{
-				//TODO: Ferry
+				var ferryIcon = new Ui.Bitmap({:rezId=>Rez.Drawables.ferryIcon_bitmap});
+				ferryIcon.setLocation(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr));
+				
+				dc.setColor(LABEL_COLOR_FERRY, Gfx.COLOR_TRANSPARENT);
+				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				ferryIcon.draw(dc);
+
+				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
 			}
 			else if(type.equals("M"))
 			{
