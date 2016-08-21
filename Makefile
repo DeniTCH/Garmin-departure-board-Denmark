@@ -9,7 +9,7 @@ DEVICE=vivoactive_hr
 ROOTPATH=/home/denis/Repositories/programming_projects/garmin_departure_board
 
 OUTPUTDIR=bin
-FILENAME=DEPABRD.PRG
+FILENAME=DEPARBRD.PRG
 
 RESOURCES=-z resources/bitmaps.xml -z resources/layouts.xml -z resources/properties.xml -z resources/settings.xml -z resources/strings.xml -z resources-dan/strings.xml
 MANIFEST=manifest.xml

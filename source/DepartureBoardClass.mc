@@ -184,8 +184,8 @@ module DepartureBoard
 					progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForStops));
 								
 	        		System.println("Requesting stops");
-	        		Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12504913" + "&coordY=" + "55739537" + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12504913" + "&coordY=" + "55739537" + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+	        		Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
 	        		currentState = SM_WAIT_STOPS_RESPONSE;
 				}
 				
@@ -263,9 +263,10 @@ module DepartureBoard
 
 					System.println("Requesting board");		        		        
 			        responseCode = null;
-			        //Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			     	// For debug:
 			     	//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008600432" + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-			    	Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008600840" + "&date=22.08.2016&time=05:35" + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			    	//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008600840" + "&date=22.08.2016&time=05:35" + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
 			        
 			        progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForBoard));
 			        currentState = SM_WAIT_BOARD_RESPONSE;	
@@ -661,7 +662,7 @@ module DepartureBoard
 
 		function onBack()
 		{
-			Ui.popView(Ui.SLIDE_IMMEDIATE);
+			//Ui.popView(Ui.SLIDE_IMMEDIATE);
 		}
 	}	
 }
