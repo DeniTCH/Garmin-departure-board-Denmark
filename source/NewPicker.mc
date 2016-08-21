@@ -33,24 +33,32 @@ class StopChooserDelegate extends Ui.BehaviorDelegate
         BehaviorDelegate.initialize();
     }
 
-    function onNextButton()
+    function onSwipe(evt)
     {
-        if(mSelectedIndex < mData.size() - 1)
-        {
-            mSelectedIndex = mSelectedIndex + 1;
-            $.selectedStop = mData[mSelectedIndex];
-            Ui.requestUpdate();
-        }
-    }
+        var direction = evt.getDirection();
 
-    function onPreviousButton()
-    {
-        if(mSelectedIndex > 0)
+        if(direction == Ui.SWIPE_RIGHT)
         {
-            mSelectedIndex = mSelectedIndex - 1;
-            $.selectedStop = mData[mSelectedIndex];
-            Ui.requestUpdate();  
+            System.println("Swiped right");            
+            if(mSelectedIndex < mData.size() - 1)
+            {
+                mSelectedIndex = mSelectedIndex + 1;
+                $.selectedStop = mData[mSelectedIndex];
+                Ui.requestUpdate();
+            }   
         }
+        else if(direction == Ui.SWIPE_LEFT)
+        {
+            System.println("Swiped left");
+            if(mSelectedIndex > 0)
+            {
+                mSelectedIndex = mSelectedIndex - 1;
+                $.selectedStop = mData[mSelectedIndex];
+                Ui.requestUpdate();  
+            }
+        }
+
+
     }
 
     function onAcceptButton()

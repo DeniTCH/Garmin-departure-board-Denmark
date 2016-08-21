@@ -20,11 +20,16 @@
 
 		<drawable id="busStopSignDrawable"/>
 
+		<button x="60" y="58" width="28" height="60">
+			<param name="behavior">onAcceptButton</param>
+		</button>
+
+
 		<label id="chooseStopLabel" text="@Strings.StrChooseStop" x="center" y="0" font="Gfx.FONT_MEDIUM" color="Gfx.COLOR_WHITE" justification="Gfx.TEXT_JUSTIFY_CENTER" />
 		<label id="selectedItemLabel" text="Buddingevej" x="center" y="65" font="Gfx.FONT_SMALL" color="Gfx.COLOR_BLACK" justification="Gfx.TEXT_JUSTIFY_CENTER" />
 		<label id="distLabel" text="Distance: 200m" x="center" y="85" font="Gfx.FONT_SMALL" color="Gfx.COLOR_BLACK" justification="Gfx.TEXT_JUSTIFY_CENTER" />
 
-
+		<!--
 		<button x="0" y="157" width="48" height="48">
 	        <state id="stateDefault" bitmap="@Drawables.arrowUp_bitmap" />
 	        <param name="behavior">onPreviousButton</param>
@@ -32,11 +37,12 @@
     	<button x="100" y="157" width="48" height="48">
 	        <state id="stateDefault" bitmap="@Drawables.arrowDown_bitmap" />
 	        <param name="behavior">onNextButton</param>
-    	</button>
+    	</button>    	
     	<button x="50" y="157" width="48" height="48">
     		<state id="stateDefault" bitmap="@Drawables.okCheckmark_bitmap" />
 	        <param name="behavior">onAcceptButton</param>
 	        <param name="background">Gfx.COLOR_RED</param>
     	</button>
+    	-->
 	</layout>
 </resources>
