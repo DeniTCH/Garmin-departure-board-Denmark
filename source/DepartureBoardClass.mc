@@ -62,6 +62,8 @@ module DepartureBoard
 		hidden var timeoutCounter = 0;
 		hidden var timeoutEnabled = false;
 
+		const TIMEOUT_10_SECONDS = 20;
+
 		enum
 		{
 			SM_GET_POSITION,
@@ -105,9 +107,14 @@ module DepartureBoard
 		// Callback function for position request
 		function setCurrentLocation(info)
 		{
-			positionAcquiredFlag = true;
-			myLat = (info.position.toDegrees()[0] * 1000000).toNumber();
-			myLon = (info.position.toDegrees()[1] * 1000000).toNumber();
+			System.println("GPS Accuracy:" + info.accuracy);
+			if(info.accuracy > 1)
+			{
+				Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setCurrentLocation));			
+				positionAcquiredFlag = true;
+				myLat = (info.position.toDegrees()[0] * 1000000).toNumber();
+				myLon = (info.position.toDegrees()[1] * 1000000).toNumber();
+			}
 		}
 		
 		// Callback function for web request
@@ -117,6 +124,7 @@ module DepartureBoard
 			responseData = data;		
 		}
 		
+		// Returns current SM state
 		function getSMState()
 		{
 			return currentState; 
@@ -158,20 +166,28 @@ module DepartureBoard
 
 			if(currentState == SM_GET_POSITION)
 			{
+				Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:setCurrentLocation));			
+				Ui.pushView(progressBarView, new ProgressBarViewInputDelegate(),Ui.SLIDE_IMMEDIATE);				
+				currentState = SM_WAITING_FOR_POSITION;
+				System.println("Getting position");
+
+				// Enable timeout for getting position
+				setTimeout(TIMEOUT_10_SECONDS); // Equals 10 seconds
+				/*
 				if(Position.getInfo().accuracy == Position.QUALITY_NOT_AVAILABLE)
 				{
 					currentState = SM_ERROR_NO_POSITION;
 					Ui.requestUpdate(); // Request update as we still are in the default view, theprogress bar hasn't been pushed yet				
 				}else
 				{
-					Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:setCurrentLocation));			
+					Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:setCurrentLocation));			
 					Ui.pushView(progressBarView, new ProgressBarViewInputDelegate(),Ui.SLIDE_IMMEDIATE);				
 					currentState = SM_WAITING_FOR_POSITION;
 					System.println("Getting position");
 
 					// Enable timeout for getting position
-					setTimeout(40); // Equals 20 seconds
-				}
+					setTimeout(20); // Equals 10 seconds
+				}*/
 				
 			// Await GPS position
 			}else if(currentState == SM_WAITING_FOR_POSITION)
@@ -196,12 +212,24 @@ module DepartureBoard
 
 	        		currentState = SM_WAIT_STOPS_RESPONSE;
 				}
-				
+
+				// If timed out either use the last known position, if such is not available, then show error
 				if(checkTimeout())
 				{ 
-					// Get rid of the progress bar view
-					Ui.popView(Ui.SLIDE_IMMEDIATE);
-					currentState = SM_ERROR_NO_POSITION;
+					// Disable GPS
+					Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setCurrentLocation));
+					if(Position.getInfo().accuracy == Position.QUALITY_LAST_KNOWN)
+					{
+						positionAcquiredFlag = 1;
+						myLat = (Position.getInfo().position.toDegrees()[0] * 1000000).toNumber();
+						myLon = (Position.getInfo().position.toDegrees()[1] * 1000000).toNumber();
+						System.println(myLat + " " + myLon);
+					}else if(Position.getInfo().accuracy == Position.QUALITY_NOT_AVAILABLE)
+					{
+						// Show error
+						Ui.popView(Ui.SLIDE_IMMEDIATE);
+						currentState = SM_ERROR_NO_POSITION;
+					}
 				}
 			}
 			// Await web request response
