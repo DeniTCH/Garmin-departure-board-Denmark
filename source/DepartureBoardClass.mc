@@ -184,8 +184,16 @@ module DepartureBoard
 					progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForStops));
 								
 	        		System.println("Requesting stops");
-	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12504913" + "&coordY=" + "55739537" + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
-	        		Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+	        		
+	        		// Tolstojs Alle
+	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12439555" + "&coordY=" + "55716391" + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));	        		
+	        		
+	        		// Rønne havn
+	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "14691660" + "&coordY=" + "55100244" + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+
+	        		// Normal
+			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+
 	        		currentState = SM_WAIT_STOPS_RESPONSE;
 				}
 				
@@ -370,203 +378,192 @@ module DepartureBoard
 			var icon_height = 27;
 			
 			var time_text = generateReadableMinutes(minutes); 
+
+			var labelColor = Gfx.COLOR_WHITE;
+			var labelTextColor = Gfx.COLOR_BLACK;
+			var labelText = "";
 			
 			if(type.equals("IC"))
 			{
-				dc.setColor(LABEL_COLOR_IC_TRAIN, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "IC", Gfx.TEXT_JUSTIFY_CENTER);
+				labelColor = LABEL_COLOR_IC_TRAIN; 
+				labelTextColor = Gfx.COLOR_WHITE;
+				labelText = "IC";
 			}
 			else if(type.equals("LYN"))
 			{
-				dc.setColor(LABEL_COLOR_IC_TRAIN, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "ICL", Gfx.TEXT_JUSTIFY_CENTER);
+				labelColor = LABEL_COLOR_IC_TRAIN; 
+				labelTextColor = Gfx.COLOR_WHITE;
+				labelText = "ICL";
 			}
 			else if(type.equals("REG"))
 			{
-				dc.setColor(LABEL_COLOR_REG_TRAIN, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "RE", Gfx.TEXT_JUSTIFY_CENTER);
+				labelColor = LABEL_COLOR_REG_TRAIN; 
+				labelTextColor = Gfx.COLOR_WHITE;
+				labelText = "RE";
 			}
 			else if(type.equals("S"))
 			{
 				if(line.find("A") != null)
 				{
-					dc.setColor(LABEL_COLOR_S_TRAIN_A, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_S_TRAIN_A; 
 				}
 				else if(line.find("B") != null)
 				{
-					dc.setColor(LABEL_COLOR_S_TRAIN_B, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_S_TRAIN_B; 
 				}
 				else if(line.find("Bx") != null)
 				{
-					dc.setColor(LABEL_COLOR_S_TRAIN_BX, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_S_TRAIN_BX; 
 				}
 				else if(line.find("C") != null)
 				{
-					dc.setColor(LABEL_COLOR_S_TRAIN_C, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_S_TRAIN_C; 
 				}
 				else if(line.find("E") != null)
 				{
-					dc.setColor(LABEL_COLOR_S_TRAIN_E, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_S_TRAIN_E; 
 				}
 				else if(line.find("F") != null)
 				{
-					dc.setColor(LABEL_COLOR_S_TRAIN_F, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_S_TRAIN_F; 
 				}
 				else if(line.find("H") != null)
 				{
-					dc.setColor(LABEL_COLOR_S_TRAIN_H, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_S_TRAIN_H; 
 				}
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line, Gfx.TEXT_JUSTIFY_CENTER);		
+				
+				labelTextColor = Gfx.COLOR_WHITE;
+				labelText = line;				
 			}
 			else if(type.equals("TOG"))
 			{
 				if(line.find("RE") != null)
 				{
-					dc.setColor(LABEL_COLOR_REG_TRAIN, Gfx.COLOR_TRANSPARENT);
-					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "Ø", Gfx.TEXT_JUSTIFY_CENTER);
+					labelColor = LABEL_COLOR_REG_TRAIN; 
+					labelTextColor = Gfx.COLOR_WHITE;
+					labelText = "Ø";
 				}
 				else if(line.find("EC") != null)
 				{
-					dc.setColor(LABEL_COLOR_REG_TRAIN, Gfx.COLOR_TRANSPARENT);
-					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "EC", Gfx.TEXT_JUSTIFY_CENTER);					
+					labelColor = LABEL_COLOR_REG_TRAIN; 
+					labelTextColor = Gfx.COLOR_WHITE;
+					labelText = "EC";
 				}
-				else if(line.find("Togbus") != null)
+				else if(line.find("Togbus") != null) //FIXME: Special case
 				{
-					dc.setColor(LABEL_COLOR_BUS_TOGBUS, Gfx.COLOR_TRANSPARENT);
-					//dc.setPenWidth(2);
-					dc.drawRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					//dc.setPenWidth(1);
-					//dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "TB", Gfx.TEXT_JUSTIFY_CENTER);					
+					labelColor = LABEL_COLOR_BUS_TOGBUS; 
+					labelTextColor = Gfx.COLOR_WHITE;
+					labelText = "TB";
 				}
 				else
 				{
-					dc.setColor(LABEL_COLOR_LOCAL_TRAIN, Gfx.COLOR_TRANSPARENT);
-					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, "L", Gfx.TEXT_JUSTIFY_CENTER);
+					labelColor = LABEL_COLOR_LOCAL_TRAIN; 
+					labelTextColor = Gfx.COLOR_WHITE;
+					labelText = "L";
 				}
 			}
 			else if(type.equals("BUS"))
 			{
 				if(line.find("A"))
 				{
-					dc.setColor(LABEL_COLOR_BUS_A, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_BUS_A; 
 				}
 				else if(line.find("E"))
 				{
-					dc.setColor(LABEL_COLOR_BUS_E, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_BUS_E; 
 				}
-				else if(line.find("S"))
+				else
 				{
-					dc.setColor(LABEL_COLOR_BUS_S, Gfx.COLOR_TRANSPARENT);
-				}else
-				{
-					dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
+					labelColor = LABEL_COLOR_BUS_NORMAL; 
 				}
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(4,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+				labelTextColor = Gfx.COLOR_WHITE;
+				labelText = line.substring(4,line.length());
 			}
 			else if(type.equals("EXB"))
 			{
 				if(line.find("X Bus") != null)
 				{
-					dc.setColor(LABEL_COLOR_BUS_X, Gfx.COLOR_TRANSPARENT);
-					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+					labelColor = LABEL_COLOR_BUS_X; 
+					labelText = line.substring(6,line.length());
+				}
+				else if(line.find("S"))
+				{
+					labelColor = LABEL_COLOR_BUS_S; 
+					labelText = line.substring(4,line.length());
 				}
 				else if(line.find("Bus") != null)
 				{
-					dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
-					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(4,line.length()), Gfx.TEXT_JUSTIFY_CENTER);	
+					labelColor = LABEL_COLOR_BUS_NORMAL; 
+					labelText = line.substring(4,line.length());
+
 				}
+				labelTextColor = Gfx.COLOR_WHITE;				
 			}
 			else if(type.equals("NB"))
 			{
-
-				dc.setColor(LABEL_COLOR_BUS_NB, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(7,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+				labelColor = LABEL_COLOR_BUS_NB; 
+				labelText = line.substring(7,line.length());
+				labelTextColor = Gfx.COLOR_WHITE;
 			}
 			else if(type.equals("TB"))
 			{
 				if(line.find("Havnebus") != null)
 				{
-					dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
-					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(9,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+					labelColor = LABEL_COLOR_BUS_NORMAL; 
+					labelText = line.substring(9,line.length());
+					labelTextColor = Gfx.COLOR_WHITE;
 				}
 				else if(line.find("Bybus") != null)
 				{
 					if(line.find("A"))
 					{
-						dc.setColor(LABEL_COLOR_BUS_A, Gfx.COLOR_TRANSPARENT);
+						labelColor = LABEL_COLOR_BUS_A; 
 					}
 					else
 					{
-						dc.setColor(LABEL_COLOR_BUS_NORMAL, Gfx.COLOR_TRANSPARENT);
+						labelColor = LABEL_COLOR_BUS_NORMAL; 
 					}
-					dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
 					
-					dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-					dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+					labelText = line.substring(6,line.length());
+					labelTextColor = Gfx.COLOR_WHITE;
 				}
-
 			}
 			else if(type.equals("F"))
 			{
-				var ferryIcon = new Ui.Bitmap({:rezId=>Rez.Drawables.ferryIcon_bitmap});
-				ferryIcon.setLocation(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr));
-				
-				dc.setColor(LABEL_COLOR_FERRY, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				ferryIcon.draw(dc);
-
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+				labelColor = LABEL_COLOR_FERRY; 			
 			}
 			else if(type.equals("M"))
 			{
-				dc.setColor(LABEL_COLOR_METRO, Gfx.COLOR_TRANSPARENT);
-				dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				
-				dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT); 
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, line.substring(6,line.length()), Gfx.TEXT_JUSTIFY_CENTER);
+				labelColor = LABEL_COLOR_METRO; 
+				labelText = line.substring(6,line.length());
+				labelTextColor = Gfx.COLOR_WHITE;
 			}
 
-			// Draw strings common for different transport types
+			// Draw label and label text except for when it is a ferry or a train bus, then draw bitmap
+			dc.setColor(labelColor, Gfx.COLOR_TRANSPARENT);
+			dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);			
+
+			if(type.equals("F") == false)
+			{
+				dc.setColor(labelTextColor, Gfx.COLOR_TRANSPARENT);
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
+			}
+			else if(line.find("Togbus") != null)
+			{
+				dc.drawRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
+				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
+			}
+			else
+			{
+				var ferryIcon = new Ui.Bitmap({:rezId=>Rez.Drawables.ferryIcon_bitmap});
+				ferryIcon.setLocation(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr));
+				ferryIcon.draw(dc);
+			}
+
+
+			// Draw board information
 			dc.drawText(base_x_offset + icon_width + 5, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 4), Gfx.FONT_TINY, time_text, Gfx.TEXT_JUSTIFY_LEFT);	
+			
 			// Check if string is too long for screen size
 			if(destination.length() > 15)
 			{
