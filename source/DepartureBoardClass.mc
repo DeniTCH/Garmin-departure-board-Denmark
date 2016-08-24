@@ -369,36 +369,32 @@ module DepartureBoard
 		}
 		
 		// Function used to draw a specific departure board line	
-		function drawDepartureTableLine(dc, layout_line_nr,type, line, destination, minutes) 
+		function drawDepartureTableLine(dc, layoutLineNr,type, line, destination, minutes) 
 		{
-			var base_x_offset = 5;
-			var base_y_offset = 6;
-			var icon_distance = 6;
-			var icon_width = 45;
-			var icon_height = 27;
+			var baseXOffset = 5;
+			var baseYOffset = 6;
+			var iconDistance = 6;
+			var iconWidth = 45;
+			var iconHeight = 27;
 			
 			var time_text = generateReadableMinutes(minutes); 
 
 			var labelColor = Gfx.COLOR_WHITE;
-			var labelTextColor = Gfx.COLOR_BLACK;
 			var labelText = "";
 			
 			if(type.equals("IC"))
 			{
 				labelColor = LABEL_COLOR_IC_TRAIN; 
-				labelTextColor = Gfx.COLOR_WHITE;
 				labelText = "IC";
 			}
 			else if(type.equals("LYN"))
 			{
 				labelColor = LABEL_COLOR_IC_TRAIN; 
-				labelTextColor = Gfx.COLOR_WHITE;
 				labelText = "ICL";
 			}
 			else if(type.equals("REG"))
 			{
 				labelColor = LABEL_COLOR_REG_TRAIN; 
-				labelTextColor = Gfx.COLOR_WHITE;
 				labelText = "RE";
 			}
 			else if(type.equals("S"))
@@ -432,7 +428,6 @@ module DepartureBoard
 					labelColor = LABEL_COLOR_S_TRAIN_H; 
 				}
 				
-				labelTextColor = Gfx.COLOR_WHITE;
 				labelText = line;				
 			}
 			else if(type.equals("TOG"))
@@ -440,25 +435,21 @@ module DepartureBoard
 				if(line.find("RE") != null)
 				{
 					labelColor = LABEL_COLOR_REG_TRAIN; 
-					labelTextColor = Gfx.COLOR_WHITE;
 					labelText = "Ø";
 				}
 				else if(line.find("EC") != null)
 				{
 					labelColor = LABEL_COLOR_REG_TRAIN; 
-					labelTextColor = Gfx.COLOR_WHITE;
 					labelText = "EC";
 				}
 				else if(line.find("Togbus") != null) //FIXME: Special case
 				{
 					labelColor = LABEL_COLOR_BUS_TOGBUS; 
-					labelTextColor = Gfx.COLOR_WHITE;
 					labelText = "TB";
 				}
 				else
 				{
 					labelColor = LABEL_COLOR_LOCAL_TRAIN; 
-					labelTextColor = Gfx.COLOR_WHITE;
 					labelText = "L";
 				}
 			}
@@ -476,7 +467,6 @@ module DepartureBoard
 				{
 					labelColor = LABEL_COLOR_BUS_NORMAL; 
 				}
-				labelTextColor = Gfx.COLOR_WHITE;
 				labelText = line.substring(4,line.length());
 			}
 			else if(type.equals("EXB"))
@@ -497,13 +487,11 @@ module DepartureBoard
 					labelText = line.substring(4,line.length());
 
 				}
-				labelTextColor = Gfx.COLOR_WHITE;				
 			}
 			else if(type.equals("NB"))
 			{
 				labelColor = LABEL_COLOR_BUS_NB; 
 				labelText = line.substring(7,line.length());
-				labelTextColor = Gfx.COLOR_WHITE;
 			}
 			else if(type.equals("TB"))
 			{
@@ -511,7 +499,6 @@ module DepartureBoard
 				{
 					labelColor = LABEL_COLOR_BUS_NORMAL; 
 					labelText = line.substring(9,line.length());
-					labelTextColor = Gfx.COLOR_WHITE;
 				}
 				else if(line.find("Bybus") != null)
 				{
@@ -525,7 +512,6 @@ module DepartureBoard
 					}
 					
 					labelText = line.substring(6,line.length());
-					labelTextColor = Gfx.COLOR_WHITE;
 				}
 			}
 			else if(type.equals("F"))
@@ -536,41 +522,40 @@ module DepartureBoard
 			{
 				labelColor = LABEL_COLOR_METRO; 
 				labelText = line.substring(6,line.length());
-				labelTextColor = Gfx.COLOR_WHITE;
 			}
 
 			// Draw label and label text except for when it is a ferry or a train bus, then draw bitmap
 			dc.setColor(labelColor, Gfx.COLOR_TRANSPARENT);
-			dc.fillRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);			
+			dc.fillRoundedRectangle(baseXOffset,baseYOffset + ((iconHeight + baseYOffset) * layoutLineNr),iconWidth,iconHeight,3);			
 
 			if(type.equals("F") == false)
 			{
 				dc.setColor(labelTextColor, Gfx.COLOR_TRANSPARENT);
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
+				dc.drawText(baseXOffset + iconWidth/2, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
 			}
 			else if(line.find("Togbus") != null)
 			{
-				dc.drawRoundedRectangle(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr),icon_width,icon_height,3);
-				dc.drawText(base_x_offset + icon_width/2, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
+				dc.drawRoundedRectangle(baseXOffset,baseYOffset + ((iconHeight + baseYOffset) * layoutLineNr),iconWidth,iconHeight,3);
+				dc.drawText(baseXOffset + iconWidth/2, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
 			}
 			else
 			{
 				var ferryIcon = new Ui.Bitmap({:rezId=>Rez.Drawables.ferryIcon_bitmap});
-				ferryIcon.setLocation(base_x_offset,base_y_offset + ((icon_height + base_y_offset) * layout_line_nr));
+				ferryIcon.setLocation(baseXOffset,baseYOffset + ((iconHeight + baseYOffset) * layoutLineNr));
 				ferryIcon.draw(dc);
 			}
 
 
 			// Draw board information
-			dc.drawText(base_x_offset + icon_width + 5, base_y_offset + ((icon_height + icon_distance) * layout_line_nr - 4), Gfx.FONT_TINY, time_text, Gfx.TEXT_JUSTIFY_LEFT);	
+			dc.drawText(baseXOffset + iconWidth + 5, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 4), Gfx.FONT_TINY, time_text, Gfx.TEXT_JUSTIFY_LEFT);	
 			
 			// Check if string is too long for screen size
 			if(destination.length() > 15)
 			{
-				dc.drawText(base_x_offset + icon_width + 5, base_y_offset + ((icon_height + icon_distance) * layout_line_nr) + icon_height/2-3, Gfx.FONT_TINY, truncateStopName(destination), Gfx.TEXT_JUSTIFY_LEFT);
+				dc.drawText(baseXOffset + iconWidth + 5, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr) + iconHeight/2-3, Gfx.FONT_TINY, truncateStopName(destination), Gfx.TEXT_JUSTIFY_LEFT);
 			}else
 			{
-				dc.drawText(base_x_offset + icon_width + 5, base_y_offset + ((icon_height + icon_distance) * layout_line_nr) + icon_height/2-3, Gfx.FONT_TINY, destination, Gfx.TEXT_JUSTIFY_LEFT);
+				dc.drawText(baseXOffset + iconWidth + 5, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr) + iconHeight/2-3, Gfx.FONT_TINY, destination, Gfx.TEXT_JUSTIFY_LEFT);
 			}
 			
 		}
