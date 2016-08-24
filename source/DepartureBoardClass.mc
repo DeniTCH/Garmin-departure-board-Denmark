@@ -94,7 +94,7 @@ module DepartureBoard
 
 	        if(System.getDeviceSettings().phoneConnected == false)
 	        {
-	        	System.println("Phone not connected!");
+	        	//System.println("Phone not connected!");
 				currentState = SM_ERROR_NO_PHONE;
 	        }else
 	        {
@@ -107,7 +107,7 @@ module DepartureBoard
 		// Callback function for position request
 		function setCurrentLocation(info)
 		{
-			System.println("GPS Accuracy:" + info.accuracy);
+			//System.println("GPS Accuracy:" + info.accuracy);
 			if(info.accuracy > 1)
 			{
 				Position.enableLocationEvents(Position.LOCATION_DISABLE, method(:setCurrentLocation));			
@@ -156,6 +156,7 @@ module DepartureBoard
 			}
 		}
 		
+		// The main state machine handler
 		function updateSM()
 		{
 			// Handle timeout countdown, if set
@@ -169,25 +170,10 @@ module DepartureBoard
 				Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:setCurrentLocation));			
 				Ui.pushView(progressBarView, new ProgressBarViewInputDelegate(),Ui.SLIDE_IMMEDIATE);				
 				currentState = SM_WAITING_FOR_POSITION;
-				System.println("Getting position");
+				//System.println("Getting position");
 
 				// Enable timeout for getting position
 				setTimeout(TIMEOUT_10_SECONDS); // Equals 10 seconds
-				/*
-				if(Position.getInfo().accuracy == Position.QUALITY_NOT_AVAILABLE)
-				{
-					currentState = SM_ERROR_NO_POSITION;
-					Ui.requestUpdate(); // Request update as we still are in the default view, theprogress bar hasn't been pushed yet				
-				}else
-				{
-					Position.enableLocationEvents(Position.LOCATION_CONTINUOUS, method(:setCurrentLocation));			
-					Ui.pushView(progressBarView, new ProgressBarViewInputDelegate(),Ui.SLIDE_IMMEDIATE);				
-					currentState = SM_WAITING_FOR_POSITION;
-					System.println("Getting position");
-
-					// Enable timeout for getting position
-					setTimeout(20); // Equals 10 seconds
-				}*/
 				
 			// Await GPS position
 			}else if(currentState == SM_WAITING_FOR_POSITION)
@@ -196,19 +182,29 @@ module DepartureBoard
 				if(positionAcquiredFlag)
 				{
 					clearTimeout();	// Reset the timeout
-					System.println("Position acquired");
+					//System.println("Position acquired");
 					progressBarView.setDisplayString(Ui.loadResource(Rez.Strings.StrWaitingForStops));
 								
-	        		System.println("Requesting stops");
+	        		//System.println("Requesting stops");
 	        		
 	        		// Tolstojs Alle
-	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12439555" + "&coordY=" + "55716391" + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));	        		
+	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12439555" + "&coordY=" + "55716391" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));	        		
 	        		
 	        		// Rønne havn
-	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "14691660" + "&coordY=" + "55100244" + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "14691660" + "&coordY=" + "55100244" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+
+	        		// Rødby havn	        		
+	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "11353111" + "&coordY=" + "54657359" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+
+					// Lyngby st.
+					//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12502923" + "&coordY=" + "55768319" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+
+					// Svanemøllen st.
+					//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12576676" + "&coordY=" + "55715771" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
 
 	        		// Normal
-			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=1000&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=" + Application.getApp().getProperty("searchRadius") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
+
 
 	        		currentState = SM_WAIT_STOPS_RESPONSE;
 				}
@@ -223,7 +219,7 @@ module DepartureBoard
 						positionAcquiredFlag = 1;
 						myLat = (Position.getInfo().position.toDegrees()[0] * 1000000).toNumber();
 						myLon = (Position.getInfo().position.toDegrees()[1] * 1000000).toNumber();
-						System.println(myLat + " " + myLon);
+						//System.println(myLat + " " + myLon);
 					}else if(Position.getInfo().accuracy == Position.QUALITY_NOT_AVAILABLE)
 					{
 						// Show error
@@ -240,11 +236,11 @@ module DepartureBoard
 					// Test if we have stops nearby
 					if(responseData.get("LocationList").hasKey("StopLocation"))
 					{
-						System.println("Stops data received");
+						//System.println("Stops data received");
 						currentState = SM_DETERMINE_STOP;													
 					}else
 					{
-						System.println("No stops to show");
+						//System.println("No stops to show");
 						
 						// Get rid of the progress bar view
 						Ui.popView(Ui.SLIDE_IMMEDIATE);
@@ -252,7 +248,7 @@ module DepartureBoard
 					}				
 				}else if(responseCode != null)
 				{
-		            System.println("Failed to get stops. Response code: " + responseCode);
+		            //System.println("Failed to get stops. Response code: " + responseCode);
 		            
 		            // Get rid of the progress bar view
 					Ui.popView(Ui.SLIDE_IMMEDIATE);
@@ -270,7 +266,7 @@ module DepartureBoard
 		    		{
 		    			if(stopsData[i].get("id").equals(favouriteStops[j]))
 		    			{
-		    				System.println("Found one of the favourites: " + favouriteStops[j]);
+		    				//System.println("Found one of the favourites: " + favouriteStops[j]);
 		    				selectedStop = stopsData[i];
 		    				currentState = SM_REQUEST_BOARD; 
 		    			}
@@ -279,7 +275,7 @@ module DepartureBoard
 		    	
 		    	if (selectedStop == null)
 		    	{
-		    		System.println("Pushing picker");
+		    		//System.println("Pushing picker");
 					Ui.pushView(new StopChooser(stopsData), new StopChooserDelegate(stopsData), Ui.SLIDE_IMMEDIATE);
 					currentState = SM_REQUEST_BOARD;				
 		    	}
@@ -288,7 +284,7 @@ module DepartureBoard
 			{
 				if($.stopSelectedFlag)
 				{
-					System.println("Stop selected: " + $.selectedStop.get("name"));
+					//System.println("Stop selected: " + $.selectedStop.get("name"));
 					var now = System.getClockTime();
 			        var time = now.hour.toString() + "." + now.min.toString();        
 			        var dateinfo = Greg.info(Time.now(), Time.FORMAT_SHORT);
@@ -297,9 +293,10 @@ module DepartureBoard
 					// Generate the URL
 					//var url = "http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + stop_id + "&date="+ date + "&time=" + time; // + "&useBus=" + use_bus
 
-					System.println("Requesting board");		        		        
+					//System.println("Requesting board");		        		        
 			        responseCode = null;
-			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time, null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
+			        ////System.println("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time);
+			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=" + $.selectedStop.get("id") + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
 			     	// For debug:
 			     	//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008600432" + "&date="+ date + "&time=" + time + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
 			    	//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/departureBoard?&format=json&id=008600840" + "&date=22.08.2016&time=05:35" + generateTransportShowSettings(), null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
@@ -312,7 +309,7 @@ module DepartureBoard
 			{
 		     	// Check the response code
 		        if (responseCode == 200) {     
-					System.println("Board received");
+					//System.println("Board received");
 		        	var values = responseData.get("DepartureBoard").get("Departure");        			
 					if(values.size() < valuesToDisplay)
 					{
@@ -327,7 +324,7 @@ module DepartureBoard
 					
 					currentState = SM_SHOW_BOARD;
 		        } else if(responseCode != null) {	        	
-		            System.println("Failed to retrive board. Response code: " + responseCode);
+		            //System.println("Failed to retrive board. Response code: " + responseCode);
 
 		            // Get rid of the progress bar view
 					Ui.popView(Ui.SLIDE_IMMEDIATE);
@@ -353,11 +350,11 @@ module DepartureBoard
 		
 		function drawDepartureBoard(dc)
 		{
-			System.println("Drawing departure board");
+			//System.println("Drawing departure board");
 		   	dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
 	   		dc.clear();
 
-	   		System.println(departureBoardData);
+	   		//System.println(departureBoardData);
 
 	       	for(var i=0;i<departureBoardData.size();i++)
 	       	{
@@ -408,6 +405,7 @@ module DepartureBoard
 			var time_text = generateReadableMinutes(minutes); 
 
 			var labelColor = Gfx.COLOR_WHITE;
+			var labelTextColor = Gfx.COLOR_WHITE;
 			var labelText = "";
 			
 			if(type.equals("IC"))
@@ -574,7 +572,7 @@ module DepartureBoard
 			}
 
 
-			// Draw board information
+			// Draw board information			
 			dc.drawText(baseXOffset + iconWidth + 5, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 4), Gfx.FONT_TINY, time_text, Gfx.TEXT_JUSTIFY_LEFT);	
 			
 			// Check if string is too long for screen size
@@ -631,7 +629,7 @@ module DepartureBoard
 		function generateTransportShowSettings()
 		{
 			var settings = "";
-			System.println("UseBus: " + Application.getApp().getProperty("useBus"));
+			//System.println("UseBus: " + Application.getApp().getProperty("useBus"));
 			if(Application.getApp().getProperty("useTrain") == false)
 			{
 				settings = settings + "&useTog=0";
@@ -644,7 +642,7 @@ module DepartureBoard
 			{
 				settings = settings + "&useMetro=0";
 			}
-			System.println("Request settings: " + settings);
+			//System.println("Request settings: " + settings);
 			return settings;
 		}
 

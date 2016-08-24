@@ -35,30 +35,30 @@ class DepartureBoardView extends Ui.View {
 
         if(smState == db.SM_SHOW_BOARD || smState == db.SM_DONE)
         {
-	        System.println("Updating view");
+	        //System.println("Updating view");
 	        db.drawDepartureBoard(dc);	                
         }
         else if(smState == db.SM_ERROR_NO_CONNECTION)
         {
-            System.println("Displaying no connection error");
+            //System.println("Displaying no connection error");
             setLayout(Rez.Layouts.NoConnectionErrorLayout(dc));
             View.onUpdate(dc);
         }
         else if(smState == db.SM_ERROR_NO_POSITION)
         {
-            System.println("Displaying no position error");
+            //System.println("Displaying no position error");
             setLayout(Rez.Layouts.NoPositionErrorLayout(dc));
             View.onUpdate(dc);
         }
         else if(smState == db.SM_ERROR_NO_STOPS)
         {
-            System.println("Displaying no stops error");
+            //System.println("Displaying no stops error");
             setLayout(Rez.Layouts.NoStopsErrorLayout(dc));
             View.onUpdate(dc);
         }
         else if(smState == db.SM_ERROR_NO_PHONE)
         {
-            System.println("Displaying no phone error");
+            //System.println("Displaying no phone error");
             setLayout(Rez.Layouts.NoPhoneErrorLayout(dc));
             View.onUpdate(dc);
         }
