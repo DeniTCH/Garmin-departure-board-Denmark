@@ -13,7 +13,7 @@ OUTPUTDIR=bin
 FILENAME=DEPARBRD.PRG
 PACKAGE_NAME=DepartureBoard.iq
 
-RESOURCES=-z resources/bitmaps.xml -z resources/layouts.xml -z resources/properties.xml -z resources/settings.xml -z resources/strings.xml -z resources-dan/strings.xml
+RESOURCES=-z resources/bitmaps.xml -z resources/layouts.xml -z resources/properties.xml -z resources/settings.xml -z resources/strings.xml -z resources/fonts.xml -z resources-dan/strings.xml
 MANIFEST=manifest.xml
 SOURCES=source/DepartureBoardView.mc source/DepartureBoardClass.mc source/DepartureBoardApp.mc source/NewPicker.mc
 

@@ -1,5 +1,5 @@
 <properties>
-	<property id="appVersion" type="string">1.0a</property>
+	<property id="appVersion" type="string">1.1</property>
 	<property id="favouriteStops" type="string">8600675,292</property>
 	<property id="useBus" type="boolean">true</property>
 	<property id="useTrain" type="boolean">true</property>

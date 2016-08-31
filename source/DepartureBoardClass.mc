@@ -37,25 +37,34 @@ module DepartureBoard
 		hidden var departureBoardData = new [valuesToDisplay];
 		
 		// Colors for transport labels
-		const LABEL_COLOR_BUS_NORMAL = Gfx.COLOR_YELLOW;
-		const LABEL_COLOR_BUS_A = Gfx.COLOR_RED;
-		const LABEL_COLOR_BUS_E = Gfx.COLOR_GREEN;
-		const LABEL_COLOR_BUS_S = Gfx.COLOR_BLUE;	
+		const LABEL_COLOR_BUS_NORMAL = 0xFDAE00;
+		const LABEL_COLOR_BUS_A = 0xB8211C;
+		const LABEL_COLOR_BUS_E = 0x00B26B;
+		const LABEL_COLOR_BUS_S = 0x0065AA;	
 		const LABEL_COLOR_BUS_X = 0x0000AA;	
 		const LABEL_COLOR_BUS_NB = 0xAAAAAA;
+		const LABEL_COLOR_HAVNEBUS = 0x1A4F6C;
 		const LABEL_COLOR_BUS_TOGBUS= Gfx.COLOR_WHITE;
-		const LABEL_COLOR_LOCAL_TRAIN = 0x000055;
+		const LABEL_COLOR_LOCAL_TRAIN = 0x50B748;
 		const LABEL_COLOR_REG_TRAIN = 0x00AA00;
-		const LABEL_COLOR_IC_TRAIN = Gfx.COLOR_RED;
-		const LABEL_COLOR_S_TRAIN_A = Gfx.COLOR_BLUE;
-		const LABEL_COLOR_S_TRAIN_B = Gfx.COLOR_DK_GREEN;
-		const LABEL_COLOR_S_TRAIN_BX = Gfx.COLOR_GREEN;
-		const LABEL_COLOR_S_TRAIN_C = Gfx.COLOR_ORANGE;
-		const LABEL_COLOR_S_TRAIN_E = Gfx.COLOR_PURPLE;
-		const LABEL_COLOR_S_TRAIN_F = Gfx.COLOR_YELLOW;
-		const LABEL_COLOR_S_TRAIN_H = Gfx.COLOR_RED;
+		const LABEL_COLOR_IC_TRAIN = 0xEF4130;
+		const LABEL_COLOR_S_TRAIN_A = 0x00B2EF;
+		const LABEL_COLOR_S_TRAIN_B = 0x50B848;
+		const LABEL_COLOR_S_TRAIN_BX = 0xA6CE39;
+		const LABEL_COLOR_S_TRAIN_C = 0xF58A1F;
+		const LABEL_COLOR_S_TRAIN_E = 0x7670B2;
+		const LABEL_COLOR_S_TRAIN_F = 0xFFC20E;
+		const LABEL_COLOR_S_TRAIN_H = 0xEF4130;
+		//TODO: Replace METRO with M1 and M2 + circle
+		//TODO: Add EC, ICL IR and ØR colors
+		const LABEL_COLOR_METRO_M1 = 0x008265;
+		const LABEL_COLOR_METRO_M2 = 0xFFC425;
+
 		const LABEL_COLOR_METRO = 0xAA0000;
 		const LABEL_COLOR_FERRY = 0x000055;
+
+		// Font
+		hidden var customFont = null;
 
 		// Timer related
 		const TIMER_TRIGGER = 500;
@@ -100,6 +109,8 @@ module DepartureBoard
 	        {
 		        currentState = SM_GET_POSITION;
 	        }
+
+	        customFont = Ui.loadResource(Rez.Fonts.atb);
 
 	        timer.start(method(:updateSM), TIMER_TRIGGER, true);
 		}
@@ -188,7 +199,7 @@ module DepartureBoard
 	        		//System.println("Requesting stops");
 	        		
 	        		// Tolstojs Alle
-	        		Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12509917" + "&coordY=" + "55739763" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));	        		
+	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12509917" + "&coordY=" + "55739763" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));	        		
 	        		
 	        		// Rønne havn
 	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "14691660" + "&coordY=" + "55100244" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
@@ -203,7 +214,7 @@ module DepartureBoard
 					//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12576676" + "&coordY=" + "55715771" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
 
 	        		// Normal
-			        //Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=" + Application.getApp().getProperty("searchRadius") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
+			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=" + Application.getApp().getProperty("searchRadius") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
 
 
 	        		currentState = SM_WAIT_STOPS_RESPONSE;
@@ -261,16 +272,13 @@ module DepartureBoard
 			{
 				stopsData = responseData.get("LocationList").get("StopLocation");
 
-				System.println(stopsData);
-				System.println(favouriteStops);
-
 				for(var i=0; i < stopsData.size();i++)
 		    	{
 		    		for(var j=0; j < favouriteStops.size(); j++)
 		    		{
 		    			if(stopsData[i].get("id").toString().equals(favouriteStops[j].toString()))
 		    			{
-		    				System.println("Match found: " + stopsData[i].get("id") + "=" + favouriteStops[j].toString());
+		    				System.println("Match: " + stopsData[i].get("id").toString() + "=" + favouriteStops[j].toString());
 		    				selectedStop = stopsData[i];
 		    				currentState = SM_REQUEST_BOARD; 
 		    				$.stopSelectedFlag = true;
@@ -563,12 +571,12 @@ module DepartureBoard
 			if(type.equals("F") == false)
 			{
 				dc.setColor(labelTextColor, Gfx.COLOR_TRANSPARENT);
-				dc.drawText(baseXOffset + iconWidth/2, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
+				dc.drawText(baseXOffset + iconWidth/2, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 1), customFont, labelText, Gfx.TEXT_JUSTIFY_CENTER);
 			}
 			else if(line.find("Togbus") != null)
 			{
 				dc.drawRoundedRectangle(baseXOffset,baseYOffset + ((iconHeight + baseYOffset) * layoutLineNr),iconWidth,iconHeight,3);
-				dc.drawText(baseXOffset + iconWidth/2, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 1), Gfx.FONT_MEDIUM, labelText, Gfx.TEXT_JUSTIFY_CENTER);
+				dc.drawText(baseXOffset + iconWidth/2, baseYOffset + ((iconHeight + iconDistance) * layoutLineNr - 1), customFont, labelText, Gfx.TEXT_JUSTIFY_CENTER);
 			}
 			else
 			{
