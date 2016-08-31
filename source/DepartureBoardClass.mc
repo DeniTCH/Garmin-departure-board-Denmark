@@ -188,7 +188,7 @@ module DepartureBoard
 	        		//System.println("Requesting stops");
 	        		
 	        		// Tolstojs Alle
-	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12439555" + "&coordY=" + "55716391" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));	        		
+	        		Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12509917" + "&coordY=" + "55739763" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));	        		
 	        		
 	        		// Rønne havn
 	        		//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "14691660" + "&coordY=" + "55100244" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));
@@ -203,7 +203,7 @@ module DepartureBoard
 					//Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + "12576676" + "&coordY=" + "55715771" + "&maxRadius=1000" + Application.getApp().getProperty("useTrain") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
 
 	        		// Normal
-			        Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=" + Application.getApp().getProperty("searchRadius") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
+			        //Comm.makeWebRequest("http://xmlopen.rejseplanen.dk/bin/rest.exe/stopsNearby?&format=json&coordX=" + myLat.toString() + "&coordY=" + myLon.toString() + "&maxRadius=" + Application.getApp().getProperty("searchRadius") + "&maxNumber=6", null, {:method=>Comm.HTTP_REQUEST_METHOD_GET,:responseType=>Comm.HTTP_RESPONSE_CONTENT_TYPE_JSON}, method(:webRequestCallback));					
 
 
 	        		currentState = SM_WAIT_STOPS_RESPONSE;
@@ -260,15 +260,21 @@ module DepartureBoard
 			else if(currentState == SM_DETERMINE_STOP)
 			{
 				stopsData = responseData.get("LocationList").get("StopLocation");
+
+				System.println(stopsData);
+				System.println(favouriteStops);
+
 				for(var i=0; i < stopsData.size();i++)
 		    	{
 		    		for(var j=0; j < favouriteStops.size(); j++)
 		    		{
-		    			if(stopsData[i].get("id").equals(favouriteStops[j]))
+		    			if(stopsData[i].get("id").toString().equals(favouriteStops[j].toString()))
 		    			{
-		    				//System.println("Found one of the favourites: " + favouriteStops[j]);
+		    				System.println("Match found: " + stopsData[i].get("id") + "=" + favouriteStops[j].toString());
 		    				selectedStop = stopsData[i];
 		    				currentState = SM_REQUEST_BOARD; 
+		    				$.stopSelectedFlag = true;
+		    				break;
 		    			}
 		    		}
 		    	}
