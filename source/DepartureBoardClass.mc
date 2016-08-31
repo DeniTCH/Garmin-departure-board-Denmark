@@ -661,6 +661,7 @@ module DepartureBoard
 		}
 	}
 
+	// Handles progress bar input
 	class ProgressBarViewInputDelegate extends Ui.BehaviorDelegate
 	{
 		function initialize()
